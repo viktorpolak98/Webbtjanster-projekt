@@ -1,7 +1,7 @@
 public class Database {
     private HashMap<String, ApiObject> database;
 
-    public void Database() {
+    public Database() {
         this.database = new HashMap<>();
     }
 
@@ -11,6 +11,17 @@ public class Database {
 
     public ApiObject getObject(String key) {
         return this.database.get(key);
+    }
+
+    public ApliObject[] getObjects() {
+        return this.database.toArray();
+    }
+
+    public void setData(ApiObject[] data) {
+        clear();
+        for (int i=0; i<data.length; i++) {
+            this.database.put(data[i].getId(), data[i]);
+        }
     }
 
     public int size() {
