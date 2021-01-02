@@ -2,8 +2,7 @@ from flask import Flask, render_template, request, redirect, session, flash, url
 import json
 
 import requests
-response = requests.get('https://google.com/')
-print(response)
+
 
 # # response = requests.get("https://polisen.se/api/events?locationname=Göteborg;Angered")
 # # # response.json()
@@ -32,7 +31,13 @@ def hello():
 def search():
     ort = request.form['ort']
 
-    response = request("https://polisen.se/api/events?locationname=" + ort)
+    response = requests.get("https://polisen.se/api/events?locationname=" + ort)
+    print(response.headers['content-type'])
+    # f=open(response)
+    # data=json.load(f)
+    print(response.json())
+    
+    
 
 
     return render_template('search.html', ort=ort)
