@@ -1,19 +1,42 @@
-import requests
+from flask import Flask, render_template, request, redirect, session, flash, url_for
 import json
 
-# response = requests.get("https://polisen.se/api/events?locationname=Göteborg;Angered")
-# # response.json()
-# # json(response.text)
-# res = json.loads(response.text)
-# print(res[0])
-# # list1 = []
-# # list1.append(response)
-# # print(list1)
-# # things = json.loads(response)
-# # print(things)
-# print(response.status_code)
-# print(response.text)
-q = input("sök ")
-response = requests.get("http://polisen.se/api/events?locationname=" + q)
-print(response.text)
+import requests
+response = requests.get('https://google.com/')
+print(response)
 
+# # response = requests.get("https://polisen.se/api/events?locationname=Göteborg;Angered")
+# # # response.json()
+# # # json(response.text)
+# # res = json.loads(response.text)
+# # print(res[0])
+# # # list1 = []
+# # # list1.append(response)
+# # # print(list1)
+# # # things = json.loads(response)
+# # # print(things)
+# # print(response.status_code)
+# # print(response.text)
+# q = input("sök ")
+# response = request.get("http://polisen.se/api/events?locationname=" + q)
+# print(response.text)
+
+app = Flask(__name__)
+app.config["DEBUG"] = True
+
+@app.route('/')
+def hello():
+    return render_template('index.html')
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    ort = request.form['ort']
+
+    response = request("https://polisen.se/api/events?locationname=" + ort)
+
+
+    return render_template('search.html', ort=ort)
+
+if __name__ == '__main__':
+    app.debug = True
+    app.run(host='localhost', port=8080, debug=True)
