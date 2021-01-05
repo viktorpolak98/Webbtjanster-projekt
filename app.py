@@ -35,7 +35,11 @@ def search():
     print(response.headers['content-type'])
     # f=open(response)
     # data=json.load(f)
-    print(response.json())
+    res = response.json()
+    # print(res)
+    for stories in res:
+        print(stories["name"])
+
     
     
 
