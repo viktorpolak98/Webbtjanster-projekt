@@ -17,7 +17,18 @@
             </div>
           </nav>
         <h1>Välkommen till twitter polisen!</h1>
-        <p>{{ ort }}</p>
+        <h2>{{ ort }}</h2>
+        {% for stories in res:%}
+        <div class="card" style="width: 18rem;">
+          <div class="card-body">
+            <h5 class="card-title">{{ stories["name"] }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ stories["summary"] }}</h6>
+            <p class="card-text">{{ stories["location"] }}</p>
+            <a href="{{stories["url"]}}" class="card-link">Länk till händelse</a>
+            <a href="#" class="card-link">Länk till tweets om händelse</a>
+          </div>
+        </div>
+        {%endfor%}
             <nav id="footerid" class="navbar fixed-bottom navbar-light bg-light">
                 <div class="container-fluid">
                   <a class="navbar-brand" href="#">Hemsida skapad av: Grupp 15</a>

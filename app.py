@@ -22,7 +22,6 @@ import requests
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
-
 @app.route('/')
 def hello():
     return render_template('index.html')
@@ -44,7 +43,7 @@ def search():
     
 
 
-    return render_template('search.html', ort=ort)
+    return render_template('search.html', ort=ort, res=res)
 
 if __name__ == '__main__':
     app.debug = True
