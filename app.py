@@ -4,6 +4,7 @@ import json
 import requests
 
 
+
 # # response = requests.get("https://polisen.se/api/events?locationname=Göteborg;Angered")
 # # # response.json()
 # # # json(response.text)
@@ -32,10 +33,11 @@ def search():
     ort = request.form['ort']
 
     response = requests.get("https://polisen.se/api/events?locationname=" + ort)
-    twrrespone = reqeusts.get("https://api.twitter.com/1.1/search/tweets.json")
+    twrrespone = requests.get("https://api.twitter.com/1.1/search/tweets.json")
     print(response.headers['content-type'])
     # f=open(response)
     # data=json.load(f)
+    twr = twrrespone.json()
     res = response.json()
     # print(res)
 
