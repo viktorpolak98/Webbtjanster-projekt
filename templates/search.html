@@ -16,16 +16,28 @@
               </a>
             </div>
           </nav>
-        <h1>Välkommen till twitter polisen!</h1>
-        <h2>{{ ort }}</h2>
+        <h1>twitterpolisen</h1>
+        <nav class="navbar navbar-light bg-light">
+          <div class="container-fluid">
+            <form action="http://127.0.0.1:5000/search" method="post">
+              <fieldset class="formular">
+                  <label for="sökning">sökning</label><br>
+                  <input class="form-input"  type="ort" id="ort" name="ort">
+                  <input type="submit" class="btn btn-primary" value="Sök">
+               </fieldset>
+          </form
+          </div>
+        </nav>
         {% for stories in res:%}
-        <div class="card" style="width: 18rem;">
+        <div class="card">
+          <div class="card-header">
+            {{ ort }}
+          </div>
           <div class="card-body">
-            <h5 class="card-title">{{ stories["name"] }}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">{{ stories["summary"] }}</h6>
-            <p class="card-text">{{ stories["location"["name"]] }}</p>
-            <a href="{{stories["url"]}}" class="card-link">Länk till händelse</a>
-            <a href="#" class="card-link">Länk till tweets om händelse</a>
+            <h5 class="card-title">{{ stories["name"]}}</h5>
+            <p class="card-text">{{ stories["summary"]}}</p>
+            <p class="card-text">{{ stories["location"] }}</p>
+            <a href="{{ stories["url"]}}" class="btn btn-primary">länk till händelse</a>
           </div>
         </div>
         {%endfor%}

@@ -24,6 +24,7 @@ app = Flask(__name__)
 app.config["DEBUG"] = True
 @app.route('/')
 def hello():
+
     return render_template('index.html')
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -31,18 +32,22 @@ def search():
     ort = request.form['ort']
 
     response = requests.get("https://polisen.se/api/events?locationname=" + ort)
+    twrrespone = reqeusts.get("https://api.twitter.com/1.1/search/tweets.json")
     print(response.headers['content-type'])
     # f=open(response)
     # data=json.load(f)
     res = response.json()
     # print(res)
+
     for stories in res:
-        print(stories["name"])
-
-    
-    
-
-
+        a_dict = stories["location"]
+        for things in a_dict:
+            a_list = a_dict["gps"].split(",")
+            longitude = a_list[0]
+            latitude = a_list[1]
+            print(longitude)
+            print(latitude)
+        
     return render_template('search.html', ort=ort, res=res)
 
 if __name__ == '__main__':
