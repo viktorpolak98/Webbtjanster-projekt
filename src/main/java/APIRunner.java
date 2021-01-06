@@ -1,9 +1,5 @@
-package se.idioti.example.sqlite;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
-import java.util.List;
 
 import static spark.Spark.*;
 
@@ -16,7 +12,7 @@ public class APIRunner {
 		try {
 			this.storage = new Database();
 			initRoutes();
-		} catch (ClassNotFoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -53,18 +49,18 @@ public class APIRunner {
 			StringBuilder sb = new StringBuilder();
 
 			sb.append("[");
-			for (int i=0; i<resources.size(); i++) {
+			for (int i=0; i<resources.length; i++) {
 				JsonObject event = new JsonObject();
-				event.addProperty("id", event.get(i).id);
-                event.addProperty("datetime", event.get(i).datetime);
-				event.addProperty("name", event.get(i).name);
-                event.addProperty("summary", event.get(i).summary);
-                event.addProperty("url", event.get(i).url);
-                event.addProperty("type", event.get(i).type);
-                event.addProperty("location", event.get(i).location);
+				event.addProperty("id",  resources[i].getId());
+                event.addProperty("datetime", resources[i].getDatetime());
+				event.addProperty("name", resources[i].getName());
+                event.addProperty("summary", resources[i].getSummary());
+                event.addProperty("url", resources[i].getUrl());
+                event.addProperty("type", resources[i].getType());
+                event.addProperty("location", resources[i].getLocation());
 				sb.append(event.toString());
 
-				if (i<resources.size()-1) {
+				if (i<resources.length-1) {
 					sb.append(",");
 				}
 			}
@@ -85,10 +81,10 @@ public class APIRunner {
             request = request.substring(request.lastIndexOf("['"));
             request = request.substring(0, request.lastIndexOf("']"));
             String[] requests = request.split("', '");
-            ApiObject[] events = new ApiObject[requests.size()];
+            ApiObject[] events = new ApiObject[requests.length];
 
-            for (int i=0; i<events.size(); i++) {
-                events[i] = gson.fromJson(request[i], ApiObject.class);
+            for (int i=0; i<events.length; i++) {
+                events[i] = gson.fromJson(requests[i], ApiObject.class);
             }
 
             this.storage.setData(events);
