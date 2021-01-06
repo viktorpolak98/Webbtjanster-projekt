@@ -40,7 +40,14 @@
             <a href="{{ stories["url"]}}" class="btn btn-primary">länk till händelse</a>
           </div>
         </div>
+      </div>
+          <div class="card-body">
+          {% for tweet in tweeters:%}
+          <h5 class="card-title">{{tweet}}</h5>
+          {%endfor%}
+      </div>
         {%endfor%}
+
             <nav id="footerid" class="navbar fixed-bottom navbar-light bg-light">
                 <div class="container-fluid">
                   <a class="navbar-brand" href="#">Hemsida skapad av: Grupp 15</a>

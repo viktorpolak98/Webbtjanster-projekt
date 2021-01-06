@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, session, flash, url
 import json
 
 import requests
+import tweepy
 
 
 
@@ -33,11 +34,9 @@ def search():
     ort = request.form['ort']
 
     response = requests.get("https://polisen.se/api/events?locationname=" + ort)
-    twrrespone = requests.get("https://api.twitter.com/1.1/search/tweets.json")
     print(response.headers['content-type'])
     # f=open(response)
     # data=json.load(f)
-    twr = twrrespone.json()
     res = response.json()
     # print(res)
 
@@ -47,11 +46,19 @@ def search():
             a_list = a_dict["gps"].split(",")
             longitude = a_list[0]
             latitude = a_list[1]
-            print(longitude)
-            print(latitude)
-        
-    return render_template('search.html', ort=ort, res=res)
 
+    auth = tweepy.OAuthHandler("S0yoM96xmJnglJeZJz2biErzO", "RnEjSRwvj1ACxDpJgKoyo1JMf0GDrZ65k4KLh5foKekBNIpkIr")
+    auth.set_access_token("1338824296177786883-T9QObu6entzSrcT0oNkhPyFj9xcxTL", "q51wL0jCdrOe0vcZXZH8wfY2jKNCprNGwvDSVRyo080wL")
+    api = tweepy.API(auth)
+
+    tweeters = []
+
+    for tweet in api.search(geocode=str(longitude + "," +  latitude + "," + "10km"), lang="sv", rpp=1):
+        print(f"{tweet.user.name}:{tweet.text}")
+        tweeters.append(tweet.text)
+
+        
+    return render_template('search.html', ort=ort, res=res, tweeters=tweeters)
 if __name__ == '__main__':
     app.debug = True
     app.run(host='localhost', port=8080, debug=True)
