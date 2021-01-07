@@ -32,7 +32,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>APIRunner</mainClass>
+              <mainClass>codefiles.APIRunner</mainClass>
             </manifest>
           </archive>
         </configuration>
@@ -44,7 +44,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>APIRunner</mainClass>
+              <mainClass>codefiles.APIRunner</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
@@ -67,7 +67,7 @@
     <dependency>
         <groupId>com.sparkjava</groupId>
         <artifactId>spark-core</artifactId>
-        <version>[2.9.3,)</version>
+        <version>2.9.3</version>
     </dependency>
     <dependency>
         <groupId>org.xerial</groupId>
