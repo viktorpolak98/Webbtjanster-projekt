@@ -29,5 +29,6 @@
     <orderEntry type="library" name="Maven: org.xerial:sqlite-jdbc:3.8.11.1" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.0" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-simple:1.7.21" level="project" />
+    <orderEntry type="library" name="com.mashape.unirest:unirest-java:1.4.91" level="project" />
   </component>
 </module>

@@ -1,3 +1,5 @@
+package codefiles;
+
 public class ApiObject {
     private String id;
     private String datetime;
@@ -45,4 +47,16 @@ public class ApiObject {
         return this.location;
     }
 
+    @Override
+    public String toString() {
+        return "ApiObject{" +
+                "id='" + id + '\'' +
+                ", datetime='" + datetime + '\'' +
+                ", name='" + name + '\'' +
+                ", summary='" + summary + '\'' +
+                ", url='" + url + '\'' +
+                ", type='" + type + '\'' +
+                ", location='" + location + '\'' +
+                '}';
+    }
 }
