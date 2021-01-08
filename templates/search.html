@@ -22,7 +22,7 @@
             <form action="http://127.0.0.1:5000/search" method="post">
               <fieldset class="formular">
                   <label for="sökning">sökning</label><br>
-                  <input class="form-input"  type="ort" id="ort" name="ort">
+                  <input class="form-input"  type="brott" id="brott" name="brott">
                   <input type="submit" class="btn btn-primary" value="Sök">
                </fieldset>
           </form
@@ -31,7 +31,7 @@
         {% for stories in res:%}
         <div class="card">
           <div class="card-header">
-            {{ ort }}
+            {{ brott }}
           </div>
           <div class="card-body">
             <h5 class="card-title">{{ stories["name"]}}</h5>
@@ -47,6 +47,9 @@
           {%endfor%}
       </div>
         {%endfor%}
+        <blockquote class="twitter-tweet" data-lang="en">
+          <p lang="en" dir="ltr">just setting up my twttr</p>&mdash; Jack (@jack) <a href="https://twitter.com/jack/status/20">March 21, 2006</a>
+        </blockquote>
 
             <nav id="footerid" class="navbar fixed-bottom navbar-light bg-light">
                 <div class="container-fluid">

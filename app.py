@@ -31,9 +31,9 @@ def hello():
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
-    ort = request.form['ort']
+    brott = request.form['brott']
 
-    response = requests.get("https://polisen.se/api/events?locationname=" + ort)
+    response = requests.get("https://polisen.se//api/events?type=" + brott)
     print(response.headers['content-type'])
     # f=open(response)
     # data=json.load(f)
@@ -58,7 +58,7 @@ def search():
         tweeters.append(tweet.text)
 
         
-    return render_template('search.html', ort=ort, res=res, tweeters=tweeters)
+    return render_template('search.html', brott=brott, res=res, tweeters=tweeters)
 if __name__ == '__main__':
     app.debug = True
     app.run(host='localhost', port=8080, debug=True)
