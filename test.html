@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Johans enhörningsdatabas</title>
+<meta charset="UTF-8">
+<style type="text/css">
+table {
+  border-spacing: 10px;
+  border-collapse: separate;
+  cellspacing: 100px;
+  width: 1200px;
+}
+td {
+  border: 1px solid black;
+  padding: 10px;
+}
+li {
+  cursor: pointer;
+}
+/*
+ * Bilden på enhörningen blir lätt för stor. Det kan vi ordna genom att,
+ * exempelvis, bestämma bredden på list och #info.
+ */
+#unicornImage img {
+  max-width: 800px;
+}
+/*
+ * I samma veva kan vi sätta bredden på #list till ett fast värde så att den
+ * inte ändrar storlek hela tiden.
+ */
+#list {
+  width: 300px;
+}
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script type="text/javascript">
+function fetchAndUpdateInfo(details) {
+  return function() {
+    $.ajax({
+      url: details,
+      headers: {"Accept": "application/json"}
+    })
+    
+    .done(function (data) {
+      /*
+       * spottedWhen tolkas av Javascript som en sträng, inte som ett
+       * Date-objekt. Däremot kan vi använda  strängen för att skapa ett
+       * Date-objekt.
+       */
+      date = new Date(data['spottedWhen']);
+      
+      /*
+       * Det här blir texten som vi visar längst ner på sidan.
+       */
+      sighting = 'Av: ' + data['reportedBy'] + ', '
+               + date.toLocaleDateString() // Den här funktionen gör om datum-
+                                           // objektet till en sträng på det
+                                           // format (åååå-mm-dd) som vi vill ha.
+               + ' i ' + data['spottedWhere']['name'];
+      
+      /*
+       * Med funktionen $().text() kan man ändra ett specifikt elements text.
+       * Vi börjar med att ändra namnet på enhörningen.
+       */
+      $('#unicornName').text(data['name']);
+      
+      /*
+       * Eftersom vi lägger in HTML fungerar inte text. Här måste vi använda
+       * oss av jQuerys $().html() istället.
+       */
+      $('#unicornImage').html('<img src="' + data['details'] + '">');
+      $('#unicornInfo').text(data['details']);
+      $('#unicornSighting').text(sighting);
+    });
+  }
+}
+
+$(document).ready(function () {
+  $.ajax({
+    url: "https://polisen.se/api/events",
+    headers: {"Accept": "application/json"}
+  })
+  .done(function (data) { 
+    list = $('#events');
+    
+    for (i = 0; i < data.length; i++) {
+      html = '<li id="event_' + i + '">' + data[i][''] + '</li>';
+      list.append(html);
+      $('#unicorn_' + i).click(fetchAndUpdateInfo(data[i]['details']));
+    }
+  });
+});
+</script>
+</head>
+<body>
+<h1>Johans enhörningsdatabas</h1>
+<table>
+  <tr>
+    <td id="list">
+      <ul id="unicorns">
+      </ul>
+    </td>
+    <td id="info">
+      <h2 id="unicornName">Ingen enhörning</h2>
+      <span id="unicornImage"></span>
+      <p id="unicornInfo"></p>
+      <p id="unicornSighting"></p>
+    </td>
+  </tr>
+</table>
+</body>
+</html>
