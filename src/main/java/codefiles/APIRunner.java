@@ -14,10 +14,10 @@ public class APIRunner {
 
 	public APIRunner() {
 		port(5000);
-		populateDataFromApi();
 
 		try {
 			this.storage = new Database();
+			populateDataFromApi();
 			initRoutes();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -53,6 +53,7 @@ public class APIRunner {
 			);
 
             ApiObject[] resources = this.storage.getObjects();
+
 			StringBuilder sb = new StringBuilder();
 
 			sb.append("[");
@@ -99,77 +100,71 @@ public class APIRunner {
 			return "";
 		});
 	}
+	public String[][] SplitDataFromApi() {
+		HttpResponse<JsonNode> response = null;
+		String body;
+		String[] entries;
+		String[][] data;
 
-	public void populateDataFromApi(){
-		HttpResponse<JsonNode> response;
+		try {
+			response = Unirest.get(
+					"https://polisen.se/api/events"
+			).queryString(
+					"fromat", "json"
+			).asJson();
 
-		try{
-			response = Unirest.get("https://polisen.se/api/events")
-					.queryString("fromat", "json")
-					.asJson();
-
-			System.out.println("Response from polisen");
-			System.out.println(response.getBody());
-			System.out.println();
-
-			String string = response.getBody().toString();
-
-            String[] data = string.split("\",\"|" +
-                    "\\},\\{|" +
-                    "\\},|" +
-					", \\{");
-//            String[] data = string.split("summary|" +
-//                    "datetime|" +
-//                    ",\"name|" +
-//                    "location|" +
-//                    "id|" +
-//                    "type|" +
-//                    "url");
-//			String[] data = string.split("\",\"|" +
-//					"\\},\\{");
-
-
-
-			System.out.println(string + " String");
-//            System.out.println(Arrays.toString(data));
-			String summary;
-			String date;
-			String name;
-			String location;
-			String id;
-			String type;
-			String url;
-
-
-			for (int i = 0; i < data.length; i++){
-				System.out.println(data[i]);
-				System.out.println();
-//                summary = data[i];
-//                date = data[i+1];
-//                name = data[i+2];
-//                location = data[i+3];
-//                id = data[i+4];
-//                type = data[i+5];
-//                url = data[i+6];
-//
-//                ApiObject apiObject = new ApiObject(id, date, name, summary, url, type, location);
-//                System.out.println(apiObject.toString());
-			}
-
-//            System.out.println(data[5]);
-
-//            for (int i = 0; i < 500; i++){
-//
-//            }
-
-
-
-//            Database storage = new Database();
-//            storage.putObject();
-
-		} catch (UnirestException e){
+		} catch (UnirestException e) {
 			e.printStackTrace();
 		}
+
+		if (response == null) {
+			return null;
+		}
+
+		body = response.getBody().toString();
+
+		body = body.substring(1, body.length()-2);
+		entries = body.split("},\\{");
+
+		data = new String[entries.length][8];
+
+		for (int i=0; i<entries.length; i++) {
+			String[] values = new String[8];
+			for (int j = 0; j < 7; j++){
+				int breakpoint = entries[i].indexOf(",\"") + 2;
+				values[j] = entries[i].substring(0, breakpoint);
+				entries[i] = entries[i].substring(breakpoint);
+			}
+			values[7] = entries[i];
+
+			values[0] = values[0].substring(values[0].indexOf(":\"") + 2, values[0].length()-3);
+			values[1] = values[1].substring(values[1].indexOf(":\"") + 2, values[1].length()-3);
+			values[2] = values[2].substring(values[2].indexOf(":\"") + 2, values[2].length()-3);
+			values[3] = values[3].substring(values[3].indexOf(":\"") + 2, values[3].length()-3);
+			values[4] = values[4].substring(values[4].indexOf(":\"") + 2, values[4].length()-4);
+			values[5] = values[5].substring(values[5].indexOf(":") + 1, values[5].length()-2);
+			values[6] = values[6].substring(values[6].indexOf(":\"") + 2, values[6].length()-3);
+			values[7] = values[7].substring(6, values[7].length()-1);
+
+			for (int j=0; j<values.length; j++) {
+				data[i][j] = values[j];
+			}
+		}
+
+		return data;
+	}
+
+	public void populateDataFromApi(){
+		SplitDataFromApi();
+		String[][] data = SplitDataFromApi();
+
+		for (int i = 0; i < data.length; i++){
+	 		ApiObject apiObject = new ApiObject(data[i][5], data[i][1], data[i][2], data[i][0], data[i][7], data[i][6], data[i][4]);
+		 	System.out.println(apiObject.toString());
+			storage.putObject(apiObject);
+		}
+
+
 	}
 
 	public static void main(String[] args) {

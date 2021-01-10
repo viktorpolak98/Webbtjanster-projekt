@@ -18,7 +18,7 @@ public class Database {
     }
 
     public ApiObject[] getObjects() {
-        return (ApiObject[]) this.database.values().toArray();
+        return this.database.values().toArray(new ApiObject[database.size()]);
     }
 
     public void setData(ApiObject[] data) {
