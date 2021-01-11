@@ -2,7 +2,6 @@ function logclick(id) {
     console.log(id);
 }
 
-
 function fetchAndUpdateInfo(details) {
     return function() {
       $.ajax({
@@ -13,7 +12,7 @@ function fetchAndUpdateInfo(details) {
         console.log(data);
       });
     }
-  }
+}
 
 function logga(form) {
     var ort = form.inputbox.value;
@@ -36,13 +35,10 @@ function logga(form) {
     });
 }
 
-
-function twitter(){
+function twitter() {
     $.ajax({ 
         method:"get",
         url:"localhost",
         headers: {"Accept": "application/json"}
     })
 }
-
-

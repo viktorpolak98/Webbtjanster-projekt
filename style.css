@@ -22,16 +22,9 @@ body {
   li {
     cursor: pointer;
   }
-  /*
-   * Bilden på enhörningen blir lätt för stor. Det kan vi ordna genom att,
-   * exempelvis, bestämma bredden på list och #info.
-   */
+  
   #unicornImage img {
     max-width: 800px;
   }
-  /*
-   * I samma veva kan vi sätta bredden på #list till ett fast värde så att den
-   * inte ändrar storlek hela tiden.
-   */
   #list {
     width: 300px;
