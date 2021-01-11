@@ -20,7 +20,7 @@ function logga(form) {
     
     $.ajax({
         method: "get",
-        url: "https://polisen.se/api/events",
+        url: "https://polisen.se/api/events?type=" + ort,
         headers: {"Accept": "application/json"}
     })
  
