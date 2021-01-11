@@ -5,6 +5,7 @@ function logga(form) {
   $.ajax({
       method: "get",
       url: "https://polisen.se/api/events?type=" + searchTerm,
+      // url skall vara localhost:5000 + searchTerm 
       headers: {"Accept": "application/json"},
   })
   .done(function (data) {
@@ -17,6 +18,7 @@ function logga(form) {
       $('#police_post_' + i).click(updatePoliceDiv(data[i]));
     }
   });
+
 
   function getTwitterPosts (gps) {
     const twitterStuff = ['@Lenamalmstrom Eller hur 😀', '@MsMoneypenny11 @msgrp Nä, han sa ju no filter 🤣', 'Carl har bryggt kaffe.. smakar sump.. men lär ju dricka upp de, som den snälla flickvännen man är 🥲', '(SWE/ENG) Grind med packs o annat skoj! #ad !cantona !messi !grannen #FuckCorona https://t.co/kUd1t3NhDT', '@svtnyheter Är man förvånad, knappast! Sen ett nytt begrepp "Iskyla" Ha Ha', '@Natursidan Bedrövligt!', '@Newbergskan Eller hur 😀', '@thereseverdun Min mamma jobbade i Saltsjöqvarn när jag var liten och som på den tiden var kungsörnen.', '@AryaStark_got_ För mycket snö är precis lagom', 'Alla älskar snö https://t.co/PG7Z5q1Flr']
@@ -38,19 +40,18 @@ function logga(form) {
         console.log(twittertwitter[2]);
         var geocode = twittertwitter[2];
         var dateTime = twittertwitter[3]
-
-        $("#tweetName").empty();
-        tweet = '<p>' + name + '</p>';
-        $("#tweetName").append(tweet)
-
-        $("#tweetInfo").empty();
-        tweet1 = '<p>' + info + '</p>';
-        $("#tweetInfo").append(tweet1)
+        
+        lost = $('#tweets');
+        for (tweet of twittertwitter) {
+          smn = '<p>' + tweet + '</p>';
+          lost.append(smn);
+        }
         // Loopa ut alla kommentarerna i en LI eller liknande beroende på hur du vill visa dom och appenda till diven till höger som är gjort för twitter
       }
 
   function updatePoliceDiv(data) {
     return function () {
+      $("#tweets").empty();
       var gps = data.location.gps;
       var locationName = data.name;
       var name = data.name;
@@ -58,8 +59,6 @@ function logga(form) {
       var url = data.url;
       var type = data.type;
       var dateTime = data.datetime;
-      // appenda informationen till diven som du gjort till höger för polisen
-      // ta bort allt innan
       $("#eventName").empty();
       something = '<h3>' + data.name + '</h3>';
       $("#eventName").append(something);
@@ -72,16 +71,13 @@ function logga(form) {
       something3 = '<a src="' + data.url + '">' + data.url + '</a>';
       $("#eventUrl").append(something3);
 
-
-      // lägg till grejer
-      // https://www.w3schools.com/jquery/jquery_dom_add.asp
-
-
       var twitterPosts = getTwitterPosts(data.location.gps);
       updateTwitterDiv(twitterPosts);
     }
   }
 };
+
+
 
 
 
