@@ -1,36 +1,78 @@
-function logclick(id) {
-    console.log(id);
-}
-
-function fetchAndUpdateInfo(details) {
+function fetchAndUpdateInfo(url) {
     return function() {
       $.ajax({
-        url: details,
+        url: url,
         headers: {"Accept": "application/json"}
       })
       .done(function (data) {
-        console.log(data);
+        $('#eventName').text(data['name']);
+        $('#eventInfo').text(data['summary']);
       });
     }
+  }
+  
+
+function logga(form) {
+    var searchTerm = form.inputbox.value;
+
+    $.ajax({
+        method: "get",
+        url: "https://polisen.se/api/events?type=" + searchTerm,
+        headers: {"Accept": "application/json"},
+    })
+
+    .done(function (data) { 
+        list = $('#events');
+        for (i = 0; i < data.length; i++) {
+            html = '';
+            html = '<li id=event_' + i + '"' + '>' + data[i]['name'] + '</li>';
+            list.append(html);
+            $('#event_' + i).click(function() {
+                console.log('hej');
+                genereateDetailedView();
+            });
+
+            function genereateDetailedView() {
+                return function () {
+                  console.log('oh herro');
+                }
+            };
+        }
+    });
 }
+
+/*
+
+function fetchAndUpdateInfo(url) {
+    return function() {
+      $.ajax({
+        url: url,
+        headers: {"Accept": "application/json"}
+      })
+      .done(function (data) {
+    
+        $('#eventName').text(data['name']);
+        $('#eventInfo').text(data['summary']);
+      });
+    }
+  }
 
 function logga(form) {
     var ort = form.inputbox.value;
-    console.log(ort);
     
     $.ajax({
         method: "get",
         url: "https://polisen.se/api/events?type=" + ort,
-        headers: {"Accept": "application/json"}
+        headers: {"Accept": "application/json"},
     })
  
     .done(function (data) { 
         list = $('#events');
         for (i = 0; i < data.length; i++) {
             html = '';
-            html = '<li id=event_' + i + '"' + '>' + data[i]['name'] + '</h5>';
+            html = '<li id=event_' + i + '"' + '>' + data[i]['name'] + '</li>';
             list.append(html);
-            $('#event_' + i).click(logclick('#event_' + i));
+            $('#event_' + i).click(fetchAndUpdateInfo(data[i]['url']));
         }
     });
 }
@@ -42,3 +84,4 @@ function twitter() {
         headers: {"Accept": "application/json"}
     })
 }
+*/
