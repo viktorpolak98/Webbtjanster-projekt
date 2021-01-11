@@ -17,7 +17,7 @@ public class APIRunner {
 	private Database storage;
 
 	public APIRunner() {
-		port(5000);
+		port(3000);
 
 		try {
 			this.storage = new Database();
