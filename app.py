@@ -56,9 +56,9 @@ def search():
     for tweet in api.search(geocode=str(longitude + "," +  latitude + "," + "10km"), lang="sv", rpp=1):
         print(f"{tweet.user.name}:{tweet.text}")
         tweeters.append(tweet.text)
-
-        
-    return render_template('search.html', brott=brott, res=res, tweeters=tweeters)
+    
+    return tweeters
+    #return render_template('search.html', brott=brott, res=res, tweeters=tweeters)
 if __name__ == '__main__':
     app.debug = True
     app.run(host='localhost', port=8080, debug=True)
