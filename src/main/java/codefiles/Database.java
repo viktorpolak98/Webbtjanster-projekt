@@ -1,7 +1,11 @@
 package codefiles;
 
 import java.util.HashMap;
-
+/**
+ * A database that contains the ApiObjects that are created
+ * @author Viktor Polak, Tor Stenfeldt
+ * @version 1.0
+ */
 public class Database {
     private HashMap<String, ApiObject> database;
 

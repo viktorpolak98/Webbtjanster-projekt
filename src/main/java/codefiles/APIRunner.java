@@ -6,9 +6,13 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.http.HttpResponse;
-
 import static spark.Spark.*;
 
+/**
+ * A class enabling websites to access the database.
+ * @author Viktor Polak, Tor Stenfeldt
+ * @version 1.0
+ */
 public class APIRunner {
 	private Database storage;
 
@@ -17,13 +21,17 @@ public class APIRunner {
 
 		try {
 			this.storage = new Database();
-			populateDataFromApi();
 			initRoutes();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Initializes the different routes, enabling access to the database.
+	 * the get token requires no values and will return the data stored in the database.
+	 * the put token requires a collection of police events from their API and stores it in the database.
+	 */
 	public void initRoutes() {
 		options("/*",
 				(request, response) -> {
@@ -51,7 +59,8 @@ public class APIRunner {
 					"Access-Control-Allow-Headers",
 					"Origin, X-Requested-With, Content-Type, Accept"
 			);
-
+			
+			populateDataFromApi();
             ApiObject[] resources = this.storage.getObjects();
 
 			StringBuilder sb = new StringBuilder();
@@ -100,6 +109,12 @@ public class APIRunner {
 			return "";
 		});
 	}
+	/**
+	 * This method aquires data from the police-api as a string
+	 * After the raw data is aquired it splits each seprate object in to an array
+	 * After the objects have been divided it adds each parts values in to an two dimensional array
+	 * @return a two dimensional array containing each entry and their values.
+	 */
 	public String[][] SplitDataFromApi() {
 		HttpResponse<JsonNode> response = null;
 		String body;
@@ -122,7 +137,6 @@ public class APIRunner {
 		}
 
 		body = response.getBody().toString();
-
 		body = body.substring(1, body.length()-2);
 		entries = body.split("},\\{");
 
@@ -153,18 +167,17 @@ public class APIRunner {
 
 		return data;
 	}
-
-	public void populateDataFromApi(){
-		SplitDataFromApi();
+	
+	/**
+	 * Creates objects from the data received from the police API and stores them in the database.
+	 */
+	public void populateDataFromApi() {
 		String[][] data = SplitDataFromApi();
 
-		for (int i = 0; i < data.length; i++){
+		for (int i = 0; i < data.length; i++) {
 	 		ApiObject apiObject = new ApiObject(data[i][5], data[i][1], data[i][2], data[i][0], data[i][7], data[i][6], data[i][4]);
-		 	System.out.println(apiObject.toString());
 			storage.putObject(apiObject);
 		}
-
-
 	}
 
 	public static void main(String[] args) {

@@ -1,5 +1,9 @@
 package codefiles;
-
+/**
+ * A class used to create objects that are retrived from an API
+ * @author Viktor Polak, Tor Stenfeldt
+ * @version 1.0
+ */
 public class ApiObject {
     private String id;
     private String datetime;
