@@ -9,36 +9,39 @@
     <title>TwitterPoPo</title>
     </head>
     <body>
-        <nav class="navbar navbar-light bg-light" id="navigation">
+        <nav class="navbar navbar-dark bg-dark" id="navigation">
             <div class="container-fluid">
               <a href="index.html" class="navbar-brand" href="#">
                 TwitterPolice
               </a>
             </div>
           </nav>
-        <h1>Välkommen till twitter polisen!</h1>
-        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy 
-            text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has 
-            survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised 
-            in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software 
-            like Aldus PageMaker including versions of Lorem Ipsum.</p>
-
-        <h2>Vad vill du söka på?</h2>
-        <nav class="navbar navbar-light bg-light">
+        <nav class="inledning">
+          <h1>Välkommen till twitter polisen!</h1>
+          <p>Detta är twitterpolisen! Här kan du söka på en händelse och med hjälp utav polisens API så får du upp de senaste 
+            händelserna. Klickar du sedan på en av händelserna så får du upp tweets som har med händelsen att göra! Exempel på 
+            det du kan söka på kan vara: Alkohollagen, Anträffad död, Anträffat gods, Arbetsplatsolycka, Bedrägeri, Bombhot
+            Ekobrott, Farligt föremål, misstänkt, Fjällräddning, Fylleri/LOB, Förfalskningsbrott, Försvunnen person, Gränskontroll
+            Larm Inbrott, Larm Överfall, Rattfylleri Rån!
+          </p>
+        </nav>
+        <h2 class="inledning">Vad vill du söka på?</h2>
+        <nav class="navbar navbar-dark bg-dark">
             <div class="container-fluid">
-              <form name="myform" action="" class="d-flex" method="GET">
-                <input class="form-control me-2" type="search" name="inputbox" placeholder="ort.." aria-label="Search">
-                <input type="button" name="button" value="click" onClick="logga(this.form)">
+              <form id="myform" name="myform" action="" class="d-flex" method="GET">
+                <input class="form-control me-2" type="search" name="inputbox" placeholder="sök på händelsetyp.." aria-label="Search">
+                <input id="sokbtn" type="button" name="button" value="sök" class="btn btn-light" onClick="logga(this.form)">
               </form>
             </div>
           </nav>
-          <table>
+          <table class="resultat">
+            <tr class="polisen">
+              <th class="Polisen">Polisens händelser:</th>
+              <th class="twitter">Relaterade tweets:</th>
+            </tr>
             <tr>
-              <td id="list">
-                <div class="card-body">
-                  <ul id="events">
-                  </ul>
-                </div>
+              <td>
+                <ul id="events"></ul>
               </td>
             </tr>
           </table>

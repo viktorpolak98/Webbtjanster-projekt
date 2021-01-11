@@ -8,23 +8,37 @@ body {
     width: 70%;
     margin: auto;
 }
-  }
-  table {
-    border-spacing: 10px;
-    border-collapse: separate;
-    cellspacing: 100px;
-    width: 1200px;
-  }
-  td {
-    border: 1px solid black;
-    padding: 10px;
-  }
-  li {
-    cursor: pointer;
-  }
-  
-  #unicornImage img {
-    max-width: 800px;
-  }
-  #list {
-    width: 300px;
+
+#myform {
+  width: 50%;
+}
+
+#sokbtn {
+  padding-right: 20px;
+  padding-left: 20px;
+}
+
+.inledning {
+  background-color: rgb(226, 223, 223);
+  margin: 0px;
+  padding: 10px;
+}
+
+.inledning > p {
+  margin-bottom: 0px;
+}
+
+.resultat {
+  background-color: rgb(226, 223, 223);
+  width: 100%;
+  padding: 10px;
+}
+
+.polisen {
+  padding: 0px;
+}
+
+li {
+  max-width: 50%;
+  margin-right: 10px;
+}

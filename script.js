@@ -28,7 +28,7 @@ function logga(form) {
         list = $('#events');
         for (i = 0; i < data.length; i++) {
             html = '';
-            html = '<h5 id=event_' + i + '"' + 'class="card-title">' + data[i]['name'] + '</h5>';
+            html = '<li id=event_' + i + '"' + '>' + data[i]['name'] + '</h5>';
             list.append(html);
             $('#event_' + i).click(logclick('#event_' + i));
         }
