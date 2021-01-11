@@ -1,4 +1,31 @@
-body {
+table {
+
+  width: 300px;
+  text-align: center;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Create three equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 33%;
+  padding: 10px;
+  
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+
+
+/* body {
     width: 70%;
     font-size: center;
     margin: auto;
@@ -42,4 +69,4 @@ li {
   max-width: 50%;
   margin-right: 10px;
   cursor: pointer;
-}
+} */

@@ -34,6 +34,7 @@ li {
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script type="text/javascript">
+
 function fetchAndUpdateInfo(details) {
   return function() {
     $.ajax({
@@ -74,7 +75,10 @@ function fetchAndUpdateInfo(details) {
   }
 }
 
+
 $(document).ready(function () {
+  const twitterStuff = ['@Lenamalmstrom Eller hur 😀', '@MsMoneypenny11 @msgrp Nä, han sa ju no filter 🤣', 'Carl har bryggt kaffe.. smakar sump.. men lär ju dricka upp de, som den snälla flickvännen man är 🥲', '(SWE/ENG) Grind med packs o annat skoj! #ad !cantona !messi !grannen #FuckCorona https://t.co/kUd1t3NhDT', '@svtnyheter Är man förvånad, knappast! Sen ett nytt begrepp "Iskyla" Ha Ha', '@Natursidan Bedrövligt!', '@Newbergskan Eller hur 😀', '@thereseverdun Min mamma jobbade i Saltsjöqvarn när jag var liten och som på den tiden var kungsörnen.', '@AryaStark_got_ För mycket snö är precis lagom', 'Alla älskar snö https://t.co/PG7Z5q1Flr']
+ // FIXA EN SÖKBAR, just nu tar ni bara allt dom har, ta funktionen LOGGA från din andra sida
   $.ajax({
     url: "https://polisen.se/api/events",
     headers: {"Accept": "application/json"}
@@ -83,20 +87,69 @@ $(document).ready(function () {
     list = $('#unicorns');
     console.log(data[1]);
     for (i = 0; i < data.length; i++) {
-      html = '<li id="unicorn_' + i + '">' + data[i]['name'] + '</li>';
+      html = '<li id="police_post_' + i + '">' + data[i]['name'] + '</li>';
       list.append(html);
-      $('#unicorn_' + i).click(detailedView(data[i]));
+      $('#police_post_' + i).click(updatePoliceDiv(data[i]));
     }
   });
 
-  function detailedView(data) {
+  function getTwitterPosts (gps) {
+    // $.ajax({
+    //   url: "JAVAROUTEN TILL TWITTER API + gps",
+    //   headers: {"Accept": "application/json"}
+    // })
+    // .done(function (data) { 
+    //   return data.body ANTAGLIGEN DATA.BODY, logga data om det inte är det för att titta;
+    // });
+    return twitterStuff;
+  } 
+  
+  function updateTwitterDiv(twitterPosts) {
+    console.log(twitterPosts[0]);
+    console.log(twitterPosts[1]);
+    console.log(twitterPosts[2]);
+    // Loopa ut alla kommentarerna i en LI eller liknande beroende på hur du vill visa dom och appenda till diven till höger som är gjort för twitter
+  }
+
+  function updatePoliceDiv(data) {
     return function () {
+      console.log(data.location.gps);
+      var gps = data.location.gps;
       console.log(data.location.name);
+      var locationName = data.name;
       console.log(data.name);
+      var name = data.name;
       console.log(data.summary);
+      var summary = data.summary;
       console.log(data.url);
+      var url = data.url;
       console.log(data.type);
+      var type = data.type;
       console.log(data.datetime);
+      var dateTime = data.datetime;
+      // appenda informationen till diven som du gjort till höger för polisen
+      // ta bort allt innan
+      $("#eventName").empty();
+      something = '<h3>' + data.name + '</h3>';
+      $("#eventName").append(something);
+
+      $("#eventInfo").empty();
+      something2 = '<p>' + data.summary + '</p>';
+      $("#eventName").append(something2);
+
+      $("#eventUrl").empty();
+      something3 = '<a src="' + data.url + '">' + data.url + '</a>';
+      $("#eventUrl").append(something3);
+
+
+      // lägg till grejer
+      // https://www.w3schools.com/jquery/jquery_dom_add.asp
+
+
+
+
+      var twitterPosts = getTwitterPosts(data.location.gps);
+      updateTwitterDiv(twitterPosts);
     }
   }
 });
@@ -111,10 +164,9 @@ $(document).ready(function () {
       </ul>
     </td>
     <td id="info">
-      <h2 id="unicornName">Ingen enhörning</h2>
-      <span id="unicornImage"></span>
-      <p id="unicornInfo"></p>
-      <p id="unicornSighting"></p>
+      <h2 id="eventName">Event namn</h2>
+      <span id="eventInfo"></span>
+      <p id="eventUrl"></p>
     </td>
   </tr>
 </table>
