@@ -1,0 +1,33 @@
+body {
+    background-color: red;
+}
+
+.column2 {
+    float: right;
+    width: 50% !important;
+    padding: 10px;
+    
+}
+.column1 {
+    float:left;
+    width: 50% !important;
+    padding: 10px;
+} 
+  
+body > div > div.column1 {
+    width: 50%;
+    float: left;
+    
+}
+
+body > div > div.column2 {
+    width: 50%;
+    float: right;
+    
+}
+  /* Clear floats after the columns */
+  /* .row:after {
+    content: "";
+    display: table;
+    clear: both;
+  } */

@@ -6,21 +6,6 @@ import tweepy
 
 
 
-# # response = requests.get("https://polisen.se/api/events?locationname=Göteborg;Angered")
-# # # response.json()
-# # # json(response.text)
-# # res = json.loads(response.text)
-# # print(res[0])
-# # # list1 = []
-# # # list1.append(response)
-# # # print(list1)
-# # # things = json.loads(response)
-# # # print(things)
-# # print(response.status_code)
-# # print(response.text)
-# q = input("sök ")
-# response = request.get("http://polisen.se/api/events?locationname=" + q)
-# print(response.text)
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
@@ -31,34 +16,54 @@ def hello():
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
-    ort = request.form['ort']
+    brott = request.form['brott']
 
-    response = requests.get("https://polisen.se/api/events?locationname=" + ort)
+    response = requests.get("https://polisen.se/api/events?type=" + brott)
     print(response.headers['content-type'])
     # f=open(response)
     # data=json.load(f)
     res = response.json()
     # print(res)
-
+    geolocations = []
+    geodict = {
+        "id" : "",
+        "longitude" : "",
+        "latitude" : ""
+    }
     for stories in res:
         a_dict = stories["location"]
+        a_id = stories["id"]
         for things in a_dict:
             a_list = a_dict["gps"].split(",")
             longitude = a_list[0]
             latitude = a_list[1]
+            geodict["id"]=a_id
+            geodict["longitude"]=longitude
+            geodict["latitude"]=latitude
+            geolocations.append(geodict)
 
-    auth = tweepy.OAuthHandler("S0yoM96xmJnglJeZJz2biErzO", "RnEjSRwvj1ACxDpJgKoyo1JMf0GDrZ65k4KLh5foKekBNIpkIr")
-    auth.set_access_token("1338824296177786883-T9QObu6entzSrcT0oNkhPyFj9xcxTL", "q51wL0jCdrOe0vcZXZH8wfY2jKNCprNGwvDSVRyo080wL")
+    auth = tweepy.OAuthHandler("kLBuI2XrILD4qIJ3vZhJY7KTf", "CpCEWCmbWVMWWuTVSvTrNEA9KgESonp1NEozgDSEjqPscItt1N")
+    auth.set_access_token("1338824296177786883-mzQQKoz1p6YUclAkQIMScBweIKnbWg", "bSeaoJs8OPSav7bvbcA3K86kjA0VhskAfDHgnuq8o6gF1")
     api = tweepy.API(auth)
+    api = tweepy.API(auth, wait_on_rate_limit=True)
 
+    tweet_dict = {
+        "username" : "",
+        "text" : ""
+    }
+    
     tweeters = []
+    for posts in api.search(q=brott, geocode=str(longitude + "," +  latitude + "," + "50km"), lang="sv", rpp=10):
+        # print(f"{tweet.user.name}:{tweet.text}")
+        tweet_dict["username"]=posts.user.name
+        tweet_dict["text"]=posts.text
+        tweeters.append(tweet_dict)
 
-    for tweet in api.search(geocode=str(longitude + "," +  latitude + "," + "10km"), lang="sv", rpp=1):
-        print(f"{tweet.user.name}:{tweet.text}")
-        tweeters.append(tweet.text)
+    
 
         
-    return render_template('search.html', ort=ort, res=res, tweeters=tweeters)
+    return render_template('search.html', brott=brott, res=res, tweeters=tweeters)
+
 if __name__ == '__main__':
     app.debug = True
-    app.run(host='localhost', port=8080, debug=True)
+    app.run(host='localhost', port=5000, debug=True)
