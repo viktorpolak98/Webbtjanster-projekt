@@ -4,9 +4,6 @@ import json
 import requests
 import tweepy
 
-
-
-
 app = Flask(__name__)
 app.config["DEBUG"] = True
 @app.route('/')
