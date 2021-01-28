@@ -1,31 +1,29 @@
 from flask import Flask, render_template, request, redirect, session, flash, url_for
 import json
-
-import requests
-import tweepy
+from twitterfunctions import search_tweet, get_police, search_police, get_geo_locations, search_all_tweet
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
 @app.route('/')
 def hello():
-    response = requests.get("https://polisen.se/api/events")
-    print(response.headers['content-type'])
-    res = response.json()
+    res = get_police()
+    x = "malmö universitet"
+    y = search_all_tweet(x)
+    return render_template('test.html', res=res, tweeters=y)
 
-    auth = tweepy.OAuthHandler("kLBuI2XrILD4qIJ3vZhJY7KTf", "CpCEWCmbWVMWWuTVSvTrNEA9KgESonp1NEozgDSEjqPscItt1N")
-    auth.set_access_token("1338824296177786883-mzQQKoz1p6YUclAkQIMScBweIKnbWg", "bSeaoJs8OPSav7bvbcA3K86kjA0VhskAfDHgnuq8o6gF1")
-    api = tweepy.API(auth)
-    api = tweepy.API(auth, wait_on_rate_limit=True)
-
-    tweet_dict = {
-        "username" : "",
-        "text" : ""
-    }
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    brott = request.form['brott']
+    res = search_police(brott)
+    x = get_geo_locations(res)
+    for loc in x:
+        b = loc["latitude"]
+        c = loc["longitude"]
     
-    for status in tweepy.Cursor(api.user_timeline).items(200):
-        print(status)
+    y = search_tweet(brott, b, c)
 
-    return render_template('test.html', res=res, tweeters=tweeters)
+        
+    return render_template('newsearch.html', brott=brott, res=res, tweeters=y)
 
 if __name__ == '__main__':
     app.debug = True
