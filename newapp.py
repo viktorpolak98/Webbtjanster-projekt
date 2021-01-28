@@ -14,13 +14,14 @@ def hello():
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     brott = request.form['brott']
-    res = search_police(brott)
+    date = request.form['date']
+    res = search_police(brott, date)
     x = get_geo_locations(res)
-    for loc in x:
-        b = loc["latitude"]
-        c = loc["longitude"]
-    
-    y = search_tweet(brott, b, c)
+    for cordinate in x:
+        lon = cordinate["longitude"]
+        lat = cordinate["latitude"]
+
+    y = search_tweet(brott, lon, lat)
 
         
     return render_template('newsearch.html', brott=brott, res=res, tweeters=y)

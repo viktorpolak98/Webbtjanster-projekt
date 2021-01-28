@@ -8,7 +8,7 @@ def search_all_tweet(question):
     api = tweepy.API(auth, wait_on_rate_limit=True)
 
     tweeters = []
-    new_search = api.search(q=question, lang="sv", maxResults=1)
+    new_search = api.search(q=question, lang="sv", maxResults=10)
     for status in new_search:
         tweet_dict = {
         "username" : "",
@@ -26,11 +26,44 @@ def get_police():
     res = response.json()
     return res
 
-def search_police(question):
+def converter(month):
+    if month == "januari":
+        return "01"
+    elif month == "februari":
+        return "02"
+    elif month == "mars":
+        return "03"
+    elif month == "april":
+        return "04"
+    elif month == "maj":
+        return "05"
+    elif month == "juni":
+        return "06"
+    elif month == "juli":
+        return "07"
+    elif month == "augusti":
+        return "08"
+    elif month == "september":
+        return "09"
+    elif month == "oktober":
+        return "10"
+    elif month == "november":
+        return "11"
+    else:
+        return "12"
+
+def search_police(question, date):
+    result = []
     response = requests.get("https://polisen.se/api/events?type=" + question)
     print(response.headers['content-type'])
     res = response.json()
-    return res
+    for story in res:
+        x = story["name"].split(" ")
+        a = x[1]
+        y = "2021" + "-" + converter(a) + "-" + x[0]
+        if y == date:
+            result.append(story)
+    return result
 
 def get_geo_locations(dict):
     geolocations = []
