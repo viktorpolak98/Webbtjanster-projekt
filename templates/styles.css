@@ -1,5 +1,4 @@
 table {
-
   width: 300px;
   text-align: center;
 }
@@ -22,8 +21,6 @@ table {
   display: table;
   clear: both;
 }
-
-
 
 /* body {
     width: 70%;
