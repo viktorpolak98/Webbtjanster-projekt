@@ -1,43 +1,75 @@
 package codefiles;
 
+import codefiles.objects.PoliceObject;
+import codefiles.objects.TwitterObject;
+
 import java.util.HashMap;
+
 /**
- * A database that contains the ApiObjects that are created
+ * The database containing police- and Twitter objects.
  * @author Viktor Polak, Tor Stenfeldt
- * @version 1.0
+ * @version 1.1
  */
 public class Database {
-    private HashMap<String, ApiObject> database;
+    private HashMap<String, PoliceObject> policeDB;
+    private HashMap<String, TwitterObject> twitterDB;
 
     public Database() {
-        this.database = new HashMap<>();
+        this.policeDB = new HashMap<>();
+        this.twitterDB = new HashMap<>();
     }
 
-    public void putObject(ApiObject object) {
-        this.database.putIfAbsent(object.getId(), object);
+    public void putPolice(PoliceObject object) {
+        this.policeDB.putIfAbsent(object.getId(), object);
     }
 
-    public ApiObject getObject(String key) {
-        return this.database.get(key);
+    public PoliceObject getPolice(String key) {
+        return this.policeDB.get(key);
     }
 
-    public ApiObject[] getObjects() {
-        return this.database.values().toArray(new ApiObject[database.size()]);
+    public PoliceObject[] getPolice() {
+        return this.policeDB.values().toArray(new PoliceObject[policeDB.size()]);
     }
 
-    public void setData(ApiObject[] data) {
-        clear();
+    public void setPolice(PoliceObject[] data) {
+        clearPolice();
         for (int i=0; i<data.length; i++) {
-            this.database.put(data[i].getId(), data[i]);
+            this.policeDB.put(data[i].getId(), data[i]);
         }
     }
 
-    public int size() {
-        return this.database.size();
+    public void clearPolice() {
+        this.policeDB.clear();
     }
 
-    public void clear() {
-        this.database.clear();
+    public int sizePolice() {
+        return this.policeDB.size();
     }
 
+    public void putTwitter(TwitterObject object) {
+        this.twitterDB.putIfAbsent(object.getId(), object);
+    }
+
+    public TwitterObject getTwitter(String key) {
+        return this.twitterDB.get(key);
+    }
+
+    public TwitterObject[] getTwitter() {
+        return this.twitterDB.values().toArray(new TwitterObject[twitterDB.size()]);
+    }
+
+    public void setTwitter(TwitterObject[] data) {
+        clearTwitter();
+        for (int i=0; i<data.length; i++) {
+            this.twitterDB.put(data[i].getId(), data[i]);
+        }
+    }
+
+    public void clearTwitter() {
+        this.twitterDB.clear();
+    }
+
+    public int sizeTwitter() {
+        return this.policeDB.size();
+    }
 }

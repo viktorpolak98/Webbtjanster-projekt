@@ -1,10 +1,11 @@
-package codefiles;
+package codefiles.objects;
+
 /**
- * A class used to create objects that are retrived from an API
+ * An object representing police reports.
  * @author Viktor Polak, Tor Stenfeldt
- * @version 1.0
+ * @version 1.1
  */
-public class ApiObject {
+public class PoliceObject {
     private String id;
     private String datetime;
     private String name; 
@@ -13,7 +14,7 @@ public class ApiObject {
     private String type;
     private String location;
 
-    public ApiObject(String id, String datetime, String name, String summary, String url, String type, String location) {
+    public PoliceObject(String id, String datetime, String name, String summary, String url, String type, String location) {
         this.id = id;
         this.datetime = datetime;
         this.name = name;

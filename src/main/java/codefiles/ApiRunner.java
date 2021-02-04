@@ -1,5 +1,6 @@
 package codefiles;
 
+import codefiles.objects.PoliceObject;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.mashape.unirest.http.JsonNode;
@@ -13,10 +14,10 @@ import static spark.Spark.*;
  * @author Viktor Polak, Tor Stenfeldt
  * @version 1.0
  */
-public class APIRunner {
+public class ApiRunner {
 	private Database storage;
 
-	public APIRunner() {
+	public ApiRunner() {
 		port(3000);
 
 		try {
@@ -61,7 +62,7 @@ public class APIRunner {
 			);
 			
 			populateDataFromApi();
-            ApiObject[] resources = this.storage.getObjects();
+            PoliceObject[] resources = this.storage.getPolice();
 
 			StringBuilder sb = new StringBuilder();
 
@@ -98,13 +99,13 @@ public class APIRunner {
             request = request.substring(request.lastIndexOf("['"));
             request = request.substring(0, request.lastIndexOf("']"));
             String[] requests = request.split("', '");
-            ApiObject[] events = new ApiObject[requests.length];
+            PoliceObject[] events = new PoliceObject[requests.length];
 
             for (int i=0; i<events.length; i++) {
-                events[i] = gson.fromJson(requests[i], ApiObject.class);
+                events[i] = gson.fromJson(requests[i], PoliceObject.class);
             }
 
-            this.storage.setData(events);
+            this.storage.setPolice(events);
 
 			return "";
 		});
@@ -175,12 +176,12 @@ public class APIRunner {
 		String[][] data = SplitDataFromApi();
 
 		for (int i = 0; i < data.length; i++) {
-	 		ApiObject apiObject = new ApiObject(data[i][5], data[i][1], data[i][2], data[i][0], data[i][7], data[i][6], data[i][4]);
-			storage.putObject(apiObject);
+	 		PoliceObject apiObject = new PoliceObject(data[i][5], data[i][1], data[i][2], data[i][0], data[i][7], data[i][6], data[i][4]);
+			storage.putPolice(apiObject);
 		}
 	}
 
 	public static void main(String[] args) {
-		APIRunner server = new APIRunner();
+		ApiRunner server = new ApiRunner();
 	}
 }
