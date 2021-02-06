@@ -55,7 +55,8 @@ function getTweets (gps) {
     url: "JAVAROUTEN TILL TWITTER API + gps",
     headers: {"Accept": "application/json"}
   }).done(function (data) {
-    return data.body ANTAGLIGEN DATA.BODY, logga data om det inte är det för att titta;
+    //return data.body ANTAGLIGEN DATA.BODY,
+    //logga data om det inte är det för att titta;
   });
   */
   return twitterStuff;
@@ -187,7 +188,8 @@ $(document).ready(function() {
     //   headers: {"Accept": "application/json"}
     // })
     // .done(function (data) {
-    //   return data.body ANTAGLIGEN DATA.BODY, logga data om det inte är det för att titta;
+    //   return data.body ANTAGLIGEN DATA.BODY,
+    //   logga data om det inte är det för att titta;
     // });
     return twitterStuff;
   }

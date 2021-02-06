@@ -94,41 +94,47 @@
   </div>
   <!-- Events -->
   <div class="column">
-    <div class="police">
-      <table>
+    <div class="scrollBox">
+      <div class="police">
+        <table>
+          <tr>
+            <td id="Polisen">
+              <ul id="events">
+              </ul>
+            </td>
+            <td id="info">
+              <p id="eventInfo"></p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- Event info -->
+  <div class="column">
+    <div class="scrollBox">
+      <table class="">
         <tr>
-          <td id="Polisen">
-            <ul id="events">
-            </ul>
-          </td>
-          <td id="info">
-            <p id="eventInfo"></p>
+          <td id="eventTable">
+            <p id="eventTitle"></p>
+            <p id="eventDescription"></p>
           </td>
         </tr>
       </table>
     </div>
   </div>
-  <!-- Event info -->
-  <div class="column">
-    <table class="">
-      <tr>
-        <td id="eventTable">
-          <p id="eventTitle"></p>
-          <p id="eventDescription"></p>
-        </td>
-      </tr>
-    </table>
-  </div>
   <!-- Tweets -->
   <div class="column">
-    <table class="">
-      <tr>
-        <td id="tweetTable">
-          <ul id="tweetList">
-          </ul>
-        </td>
-      </tr>
-    </table>
+    <div class="scrollBox">
+      <table class="">
+        <tr>
+          <td id="tweetTable">
+            <ul id="tweetList">
+            </ul>
+          </td>
+        </tr>
+      </table>
+    </div>
   </div>
 </div>
 </body>
