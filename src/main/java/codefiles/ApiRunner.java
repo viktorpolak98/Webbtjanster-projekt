@@ -1,5 +1,6 @@
 package codefiles;
 
+import codefiles.objects.PoliceObject;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.mashape.unirest.http.JsonNode;
@@ -8,8 +9,6 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.http.HttpResponse;
 import twitter4j.*;
 import twitter4j.auth.AccessToken;
-
-import java.text.NumberFormat;
 import java.util.List;
 
 import static spark.Spark.*;
@@ -19,15 +18,14 @@ import static spark.Spark.*;
  * @author Viktor Polak, Tor Stenfeldt
  * @version 1.0
  */
-public class APIRunner {
+public class ApiRunner {
 	private Database storage;
 	private final Twitter twitter = new TwitterFactory().getInstance();
 	private final AccessToken accessToken = new AccessToken("1339912172923727873-XklaSMP6xQJC9AfIMXyMk2Tg3S56kc", "36TPy4D7TbvjhIi2BIqQsaEfbObeqZCHG9Jj2sZFuhkAW");
 
-
-
-	public APIRunner() {
-		port(3000);
+	public ApiRunner() {
+		port(4000);
+		staticFiles.location("/public");
 		twitter.setOAuthConsumer("aesqAiPjoaUmxhHYq6gbTkqyN", "eddjO1013o25Bufn8u4wMligT1eMHJGYH1A9r3hmfBZeMfdiXj");
 		twitter.setOAuthAccessToken(accessToken);
 
@@ -65,16 +63,19 @@ public class APIRunner {
 
 		before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
 
-		get("/", (req, res) -> {
+		get("/:searchTerm/:startDate/:endDate", (req, res) -> {
 			res.header("Content-Type", "application/json");
 			res.header(
 					"Access-Control-Allow-Headers",
 					"Origin, X-Requested-With, Content-Type, Accept"
 			);
 
-			populateDataFromApi();
-			ApiObject[] resources = this.storage.getObjects();
+			String searchTerm = req.params(":searchTerm");
+			String startDate = req.params(":startDate");
+			String endDate = req.params(":endDate");
 
+			populateDataFromApi();
+			PoliceObject[] resources = this.storage.getPolice(searchTerm, startDate, endDate);
 			StringBuilder sb = new StringBuilder();
 
 			sb.append("[");
@@ -107,17 +108,16 @@ public class APIRunner {
 			Gson gson = new Gson();
 			String request = req.body();
 
-			request = request.substring(request.lastIndexOf("['"));
-			request = request.substring(0, request.lastIndexOf("']"));
-			String[] requests = request.split("', '");
-			ApiObject[] events = new ApiObject[requests.length];
+            request = request.substring(request.lastIndexOf("['"));
+            request = request.substring(0, request.lastIndexOf("']"));
+            String[] requests = request.split("', '");
+            PoliceObject[] events = new PoliceObject[requests.length];
 
-			for (int i = 0; i < events.length; i++) {
-				events[i] = gson.fromJson(requests[i], ApiObject.class);
-			}
+            for (int i=0; i<events.length; i++) {
+                events[i] = gson.fromJson(requests[i], PoliceObject.class);
+            }
 
-			this.storage.setData(events);
-
+            this.storage.setPolice(events);
 			return "";
 		});
 	}
@@ -130,7 +130,6 @@ public class APIRunner {
 	 * @return a two dimensional array containing each entry and their values.
 	 */
 	public String[][] SplitDataFromApi() {
-		System.out.println("Split");
 		HttpResponse<JsonNode> response = null;
 		String body;
 		String[] entries;
@@ -140,7 +139,7 @@ public class APIRunner {
 			response = Unirest.get(
 					"https://polisen.se/api/events"
 			).queryString(
-					"fromat", "json"
+					"format", "json"
 			).asJson();
 
 		} catch (UnirestException e) {
@@ -167,9 +166,8 @@ public class APIRunner {
 			values[7] = entries[i];
 
 			//summary
-			if (values[0].length()-3 >= 0){
-				values[0] = values[0].substring(values[0].indexOf(":\"") + 2, values[0].length() - 3);
-				System.out.println(values[0]);
+			if (values[0].length()-3 >= 0) {
+				values[0] = values[0].substring(values[0].indexOf(":\"") + 2, values[0].length() -3 );
 			} else {
 				values[0] = "";
 			}
@@ -177,7 +175,6 @@ public class APIRunner {
 			//DateTime
 			if (values[1].length()-3 >= 0){
 				values[1] = values[1].substring(values[1].indexOf(":\"") + 2, values[1].length() - 3);
-				System.out.println(values[1]);
 			} else {
 				values[1] = "";
 			}
@@ -185,7 +182,6 @@ public class APIRunner {
 			//name
 			if (values[2].length()-3 >= 0){
 				values[2] = values[2].substring(values[2].indexOf(":\"") + 2, values[2].length() - 3);
-				System.out.println(values[2]);
 			} else {
 				values[2] = "";
 			}
@@ -193,7 +189,6 @@ public class APIRunner {
 			//location name
 			if (values[3].length()-3 >= 0){
 				values[3] = values[3].substring(values[3].indexOf(":\"") + 2, values[3].length() - 3);
-				System.out.println(values[3]);
 			} else {
 				values[3] = "";
 			}
@@ -201,7 +196,6 @@ public class APIRunner {
 			//location cords
 			if (values[4].length()-4 >= 0){
 				values[4] = values[4].substring(values[4].indexOf(":\"") + 2, values[4].length() - 4);
-				System.out.println(values[4]);
 			} else {
 				values[4] = "";
 			}
@@ -209,7 +203,6 @@ public class APIRunner {
 			//id
 			if (values[5].length()-2 >= 0){
 				values[5] = values[5].substring(values[5].indexOf(":") + 1, values[5].length() - 2);
-				System.out.println(values[5]);
 			} else {
 				values[5] = "";
 			}
@@ -217,7 +210,6 @@ public class APIRunner {
 			//type
 			if (values[6].length()-3 >= 0){
 				values[6] = values[6].substring(values[6].indexOf(":\"") + 2, values[6].length() - 3);
-				System.out.println(values[6]);
 			} else {
 				values[6] = "";
 			}
@@ -225,7 +217,6 @@ public class APIRunner {
 			//url
 			if (values[7].length()-1 >= 0){
 				values[7] = values[7].substring(6, values[7].length() - 1);
-				System.out.println(values[7]);
 			} else {
 				values[7] = "";
 			}
@@ -238,14 +229,13 @@ public class APIRunner {
 		return data;
 	}
 
-
-		/*
-			String fullLocation = values[4];
-			String[] splitFullLocation = fullLocation.split(",");
-			String latitude = splitFullLocation[splitFullLocation.length-2];
-			String longitude = splitFullLocation[splitFullLocation.length-1];
-			populateTwitterData(latitude, longitude);
-		 */
+	/*
+		String fullLocation = values[4];
+		String[] splitFullLocation = fullLocation.split(",");
+		String latitude = splitFullLocation[splitFullLocation.length-2];
+		String longitude = splitFullLocation[splitFullLocation.length-1];
+		populateTwitterData(latitude, longitude);
+	*/
 
 	/**
 	 * Creates objects from the data received from the police API and stores them in the database.
@@ -254,98 +244,43 @@ public class APIRunner {
 		String[][] data = SplitDataFromApi();
 
 		for (int i = 0; i < data.length; i++) {
-			ApiObject apiObject = new ApiObject(data[i][5], data[i][1], data[i][2], data[i][0], data[i][7], data[i][6], data[i][4]);
-			storage.putObject(apiObject);
+	 		PoliceObject apiObject = new PoliceObject(data[i][5], data[i][1], data[i][2], data[i][0], data[i][7], data[i][6], data[i][4]);
+			storage.putPolice(apiObject);
 		}
 	}
 
 	public void populateTwitterData(String lat, String lon, String from, String until){
+		double latitude = Double.parseDouble(lat);
+		double longitude = Double.parseDouble(lon);
 
-			double latitude = Double.parseDouble(lat);
-			double longitude = Double.parseDouble(lon);
-			try {
-				Query query = new Query();
-				query.geoCode(new GeoLocation(latitude, longitude), 3.0, "km");
-				query.setSince(from);
-				query.setUntil(until);
-				QueryResult result;
-				System.out.println("Searching...");
+		try {
+			Query query = new Query();
+			query.geoCode(new GeoLocation(latitude, longitude), 3.0, "km");
+			query.setSince(from);
+			query.setUntil(until);
+			QueryResult result;
+			System.out.println("Searching...");
 
-				result = twitter.search(query);
-				List<Status> tweets = result.getTweets();
-				for (Status tweet : tweets) {
-
+			result = twitter.search(query);
+			List<Status> tweets = result.getTweets();
+			for (Status tweet : tweets) {
 //				System.out.println(tweet.getUser());
-					System.out.println(tweet.getText());
+				System.out.println(tweet.getText());
 //				System.out.println(tweet.getId());
 //				System.out.println(tweet.getPlace());
-					System.out.println(tweet.getCreatedAt() + "\n");
-					//TODO Add twitterData to database
-				/*
-				database.add(tweet.getText());
-
-
-				 */
-				}
-
-			} catch (TwitterException te) {
-				te.printStackTrace();
-				System.out.println("Failed to search tweets: " + te.getMessage());
-				System.exit(-1);
+				System.out.println(tweet.getCreatedAt() + "\n");
+				//TODO Add twitterData to database
+				//database.add(tweet.getText());
 			}
 
+		} catch (TwitterException te) {
+			te.printStackTrace();
+			System.out.println("Failed to search tweets: " + te.getMessage());
+			System.exit(-1);
+		}
 	}
 
-	/*private static class Main{
-		public static void main(String[] args) {
-			final Twitter twitter = new TwitterFactory().getInstance();
-			final AccessToken accessToken = new AccessToken("1339912172923727873-XklaSMP6xQJC9AfIMXyMk2Tg3S56kc", "36TPy4D7TbvjhIi2BIqQsaEfbObeqZCHG9Jj2sZFuhkAW");
-			twitter.setOAuthConsumer("aesqAiPjoaUmxhHYq6gbTkqyN", "eddjO1013o25Bufn8u4wMligT1eMHJGYH1A9r3hmfBZeMfdiXj");
-			twitter.setOAuthAccessToken(accessToken);
-
-			String date = "2021-02-10:07:08:36";
-			String date2 = "2021-02-12:07:08:36";
-			try {
-				Query query = new Query();
-				query.geoCode(new GeoLocation(65.316698, 21.480036), 1.0, "km").setSince(date);
-				query.until(date2);
-				QueryResult result;
-				System.out.println("Searching...");
-
-				result = twitter.search(query);
-				List<Status> tweets = result.getTweets();
-				for (Status tweet : tweets) {
-
-				System.out.println(tweet.getUser());
-					System.out.println(tweet.getText());
-				System.out.println(tweet.getId());
-				System.out.println(tweet.getPlace());
-					System.out.println(tweet.getCreatedAt() + "\n");
-					//TODO Add twitterData to database
-				/*
-				database.add(tweet.getText());
-
-
-				 */
-
-/*					try {
-						Thread.sleep(500);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					} */
-/*				}
-
-			} catch (TwitterException te) {
-				te.printStackTrace();
-				System.out.println("Failed to search tweets: " + te.getMessage());
-				System.exit(-1);
-			}
-
-
-		}
-	} */
-
-	public static void main(String[] args) throws TwitterException {
-		APIRunner server = new APIRunner();
+	public static void main(String[] args) {
+		ApiRunner server = new ApiRunner();
 	}
 }

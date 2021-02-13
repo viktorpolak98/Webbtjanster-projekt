@@ -32,7 +32,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>codefiles.APIRunner</mainClass>
+              <mainClass>codefiles.ApiRunner</mainClass>
             </manifest>
           </archive>
         </configuration>
@@ -44,7 +44,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>codefiles.APIRunner</mainClass>
+              <mainClass>codefiles.ApiRunner</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>

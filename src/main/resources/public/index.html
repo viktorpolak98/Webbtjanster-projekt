@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+        crossorigin="anonymous"
+  >
+  <link rel="stylesheet"
+        href="styles.css"
+  >
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+          crossorigin="anonymous"
+  ></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+  ></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"
+  ></script>
+  <link
+          rel="stylesheet"
+          href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css"
+  >
+  <link rel="shortcut icon" type="image/jpg" href="images/favicon.ico"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"
+  ></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"
+  ></script>
+  <script type="text/javascript"
+          src="scripts.js"
+  ></script>
+  <title>
+    Twitterpolisen
+  </title>
+</head>
+
+<body>
+<div class="row">
+  <h1 id="something">Twitterpolisens tweetdatabas</h1>
+  <p> Välkomna! Skriv in en händelsetyp visas relevanta händelser inrapporterade av Polisen.
+    Exempel på nyckelord för sökning; Alkohollagen, Bedrägeri, Larm Inbrott, Larm Överfall och Rån.
+    För komplett lista, se
+    <a href="https://polisen.se/kontakt/om-webbplatsen/oppna-data/api-over-polisens-handelser/"
+       target="_blank>"
+    >
+       polisens lista över händelsetyper
+    </a>
+    .
+  </p>
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+      <form id="myform"
+            name="myform"
+            action=""
+            class="d-flex"
+            method="GET"
+      >
+        <input class="form-control me-2"
+               type="search"
+               name="searchTerm"
+               placeholder="sök efter händelsetyp.."
+               aria-label="Search"
+        >
+        <input class="form-conrol me-2"
+               type="search"
+               name="startDate"
+               placeholder="startdatum YYYY-MM-DD"
+               aria-label="Search"
+        >
+        <input class="form-conrol me-2"
+               type="search"
+               name="endDate"
+               placeholder="slutdatum YYYY-MM-DD"
+               aria-label="Search"
+        >
+        <input id="sokbtn"
+               type="button"
+               name="button"
+               value="sök"
+               class="btn btn-light"
+               onClick="searchEvents(this.form)"
+        >
+      </form>
+    </div>
+  </nav>
+  <div class="row">
+    <div class="column" style="background-color:#aaa;">
+      <h2>Händelser</h2>
+      <table>
+        <tr>
+          <td id="policeTable">
+            <ul id="policeEventList">
+            </ul>
+          </td>
+          <td id="policeEventTable">
+            <p id="policeEventParagraph"></p>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="column" style="background-color:#bbb;">
+      <h2>Information</h2>
+    </div>
+    <div class="column" style="background-color:#ccc;">
+      <h2>Tweets</h2>
+    </div>
+  </div>
+  <!-- Events -->
+  <div class="column">
+    <div class="scrollBox">
+      <div class="police">
+        <table>
+          <tr>
+            <td id="Polisen">
+              <ul id="events">
+              </ul>
+            </td>
+            <td id="info">
+              <p id="eventInfo"></p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- Event info -->
+  <div class="column">
+    <div class="scrollBox">
+      <table class="">
+        <tr>
+          <td id="eventTable">
+            <p id="eventTitle"></p>
+            <p id="eventDescription"></p>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <!-- Tweets -->
+  <div class="column">
+    <div class="scrollBox">
+      <table class="">
+        <tr>
+          <td id="tweetTable">
+            <ul id="tweetList">
+            </ul>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+</body>
+</html>
