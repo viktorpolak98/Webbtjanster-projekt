@@ -23,8 +23,6 @@ public class ApiRunner {
 	private final Twitter twitter = new TwitterFactory().getInstance();
 	private final AccessToken accessToken = new AccessToken("1339912172923727873-XklaSMP6xQJC9AfIMXyMk2Tg3S56kc", "36TPy4D7TbvjhIi2BIqQsaEfbObeqZCHG9Jj2sZFuhkAW");
 
-
-
 	public ApiRunner() {
 		port(4000);
 		staticFiles.location("/public");
@@ -66,8 +64,6 @@ public class ApiRunner {
 		before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
 
 		get("/:searchTerm/:startDate/:endDate", (req, res) -> {
-			System.out.println("Yeehaw?");
-
 			res.header("Content-Type", "application/json");
 			res.header(
 					"Access-Control-Allow-Headers",
@@ -80,7 +76,6 @@ public class ApiRunner {
 
 			populateDataFromApi();
 			PoliceObject[] resources = this.storage.getPolice(searchTerm, startDate, endDate);
-
 			StringBuilder sb = new StringBuilder();
 
 			sb.append("[");
@@ -135,7 +130,6 @@ public class ApiRunner {
 	 * @return a two dimensional array containing each entry and their values.
 	 */
 	public String[][] SplitDataFromApi() {
-		System.out.println("Split");
 		HttpResponse<JsonNode> response = null;
 		String body;
 		String[] entries;
