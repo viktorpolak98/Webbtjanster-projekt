@@ -11,16 +11,34 @@ Authors: Tor Stenfeldt, Viktor Polak, et al.
 Populates the list of police events using the search term.
 */
 function searchEvents(search) {
-  var searchTerm = search.inputbox.value;
-  console.log(searchTerm)
+  console.log("Yarr");
+  var searchTerm = search.searchTerm.value;
+  var startDate = search.startDate.value;
+  var endDate = search.endDate.value;
+
+  if (searchTerm == '') {
+    searchTerm = '*';
+  }
+
+  if (startDate == '') {
+    startDate = '*';
+  }
+
+  if (endDate == '') {
+    endDate = '*';
+  }
+
+  console.log(searchTerm);
+  console.log(startDate);
+  console.log(endDate);
 
   $.ajax({
     method: "get",
-    url: "https://polisen.se/api/events?type=" + searchTerm,
-    //url: "localhost:5000/" + searchTerm,
+    //url: "https://polisen.se/api/events?type=" + searchTerm,
+    url: "http://localhost:4000/" + searchTerm + "/" + startDate + "/" + endDate,
     headers: {"Accept": "application/json"},
   }).done(function(result) {
-    console.log(result)
+    console.log(result);
 
     $("#events").empty();
     list = $('#events');

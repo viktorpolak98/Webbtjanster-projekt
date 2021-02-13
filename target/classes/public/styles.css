@@ -29,6 +29,12 @@ table {
   clear: both;
 }
 
+typ, start, slut {
+  font-size: 12px;
+  font-family: Tahoma, Geneva, sans-serif;
+  color: #FFF
+}
+
 /* body {
     width: 70%;
     font-size: center;

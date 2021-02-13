@@ -22,6 +22,7 @@
           rel="stylesheet"
           href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css"
   >
+  <link rel="shortcut icon" type="image/jpg" href="images/favicon.ico"/>
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"
   ></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"
@@ -29,8 +30,9 @@
   <script type="text/javascript"
           src="scripts.js"
   ></script>
-  <title Twitterpolisen
-  ></title>
+  <title>
+    Twitterpolisen
+  </title>
 </head>
 
 <body>
@@ -56,8 +58,20 @@
       >
         <input class="form-control me-2"
                type="search"
-               name="inputbox"
+               name="searchTerm"
                placeholder="sök efter händelsetyp.."
+               aria-label="Search"
+        >
+        <input class="form-conrol me-2"
+               type="search"
+               name="startDate"
+               placeholder="startdatum YYYY-MM-DD"
+               aria-label="Search"
+        >
+        <input class="form-conrol me-2"
+               type="search"
+               name="endDate"
+               placeholder="slutdatum YYYY-MM-DD"
                aria-label="Search"
         >
         <input id="sokbtn"

@@ -3,7 +3,8 @@ package codefiles;
 import codefiles.objects.PoliceObject;
 import codefiles.objects.TwitterObject;
 
-import java.util.HashMap;
+import java.time.LocalDate;
+import java.util.*;
 
 /**
  * The database containing police- and Twitter objects.
@@ -23,12 +24,61 @@ public class Database {
         this.policeDB.putIfAbsent(object.getId(), object);
     }
 
-    public PoliceObject getPolice(String key) {
-        return this.policeDB.get(key);
+    public PoliceObject[] getPolice(String searchTerm, String startDate, String endDate) {
+        LinkedList<PoliceObject> list = new LinkedList<>();
+
+        boolean hasType = (!searchTerm.equals("*"));
+        boolean hasStart = (!startDate.equals("*"));
+        boolean hasEnd = (!endDate.equals("*"));
+        boolean hasDate = (hasStart && hasEnd);
+
+        if (hasType && hasDate) {
+            LocalDate formattedStart = LocalDate.parse(startDate);
+            LocalDate formattedEnd = LocalDate.parse(endDate);
+
+            this.policeDB.values().forEach(e -> {
+                if (e.getType().equals(searchTerm)) {
+                    if (checkDate(e, formattedStart, formattedEnd)) {
+                        list.add(e);
+                    }
+                }
+            });
+        } else if (hasType) {
+            this.policeDB.values().forEach(e -> {
+                if (e.getType().equals(searchTerm)) {
+                    list.add(e);
+                }
+            });
+        } else if (hasDate) {
+            LocalDate formattedStart = LocalDate.parse(startDate);
+            LocalDate formattedEnd = LocalDate.parse(endDate);
+
+            this.policeDB.values().forEach(e -> {
+                if (checkDate(e, formattedStart, formattedEnd)) {
+                    list.add(e);
+                }
+            });
+        } else {
+            list.addAll(this.policeDB.values());
+        }
+
+        PoliceObject[] array = new PoliceObject[list.size()];
+        for (int i=0; i<list.size(); i++) {
+            array[i] = list.get(i);
+        }
+
+        return array;
     }
 
-    public PoliceObject[] getPolice() {
-        return this.policeDB.values().toArray(new PoliceObject[policeDB.size()]);
+    private boolean checkDate(PoliceObject po, LocalDate start, LocalDate end) {
+        if (po.getDatetime().length() > 10) {
+            LocalDate formattedEvent = LocalDate.parse(po.getDatetime().substring(0, 10));
+            boolean isAfter = formattedEvent.isAfter(start) || formattedEvent.isEqual(start);
+            boolean isBefore = formattedEvent.isBefore(end) || formattedEvent.isEqual(end);
+            return (isAfter && isBefore);
+        }
+
+        return false;
     }
 
     public void setPolice(PoliceObject[] data) {
@@ -40,10 +90,6 @@ public class Database {
 
     public void clearPolice() {
         this.policeDB.clear();
-    }
-
-    public int sizePolice() {
-        return this.policeDB.size();
     }
 
     public void putTwitter(TwitterObject object) {
@@ -67,9 +113,5 @@ public class Database {
 
     public void clearTwitter() {
         this.twitterDB.clear();
-    }
-
-    public int sizeTwitter() {
-        return this.policeDB.size();
     }
 }

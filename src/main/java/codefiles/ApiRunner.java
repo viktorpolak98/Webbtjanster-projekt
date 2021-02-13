@@ -7,6 +7,7 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.http.HttpResponse;
+
 import static spark.Spark.*;
 
 /**
@@ -18,7 +19,8 @@ public class ApiRunner {
 	private Database storage;
 
 	public ApiRunner() {
-		port(3000);
+		staticFiles.location("/public");
+		port(4000);
 
 		try {
 			this.storage = new Database();
@@ -54,15 +56,21 @@ public class ApiRunner {
 
 		before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
 
-		get("/", (req, res) -> {
+		get("/:searchTerm/:startDate/:endDate", (req, res) -> {
+			System.out.println("Yeehaw?");
+
 			res.header("Content-Type", "application/json");
 			res.header(
 					"Access-Control-Allow-Headers",
 					"Origin, X-Requested-With, Content-Type, Accept"
 			);
-			
+
+			String searchTerm = req.params(":searchTerm");
+			String startDate = req.params(":startDate");
+			String endDate = req.params(":endDate");
+
 			populateDataFromApi();
-            PoliceObject[] resources = this.storage.getPolice();
+			PoliceObject[] resources = this.storage.getPolice(searchTerm, startDate, endDate);
 
 			StringBuilder sb = new StringBuilder();
 
@@ -126,7 +134,7 @@ public class ApiRunner {
 			response = Unirest.get(
 					"https://polisen.se/api/events"
 			).queryString(
-					"fromat", "json"
+					"format", "json"
 			).asJson();
 
 		} catch (UnirestException e) {
@@ -152,14 +160,53 @@ public class ApiRunner {
 			}
 			values[7] = entries[i];
 
-			values[0] = values[0].substring(values[0].indexOf(":\"") + 2, values[0].length()-3);
-			values[1] = values[1].substring(values[1].indexOf(":\"") + 2, values[1].length()-3);
-			values[2] = values[2].substring(values[2].indexOf(":\"") + 2, values[2].length()-3);
-			values[3] = values[3].substring(values[3].indexOf(":\"") + 2, values[3].length()-3);
-			values[4] = values[4].substring(values[4].indexOf(":\"") + 2, values[4].length()-4);
-			values[5] = values[5].substring(values[5].indexOf(":") + 1, values[5].length()-2);
-			values[6] = values[6].substring(values[6].indexOf(":\"") + 2, values[6].length()-3);
-			values[7] = values[7].substring(6, values[7].length()-1);
+			if (values[0].length()-3 >= 0) {
+				values[0] = values[0].substring(values[0].indexOf(":\"") + 2, values[0].length()-3);
+			} else {
+				values[0] = "";
+			}
+
+			if (values[0].length()-1 >= 0) {
+				values[1] = values[1].substring(values[1].indexOf(":\"") + 2, values[1].length()-1);
+			} else {
+				values[0] = "";
+			}
+
+			if (values[0].length()-3 >= 0) {
+				values[2] = values[2].substring(values[2].indexOf(":\"") + 2, values[2].length()-3);
+			} else {
+				values[0] = "";
+			}
+
+			if (values[0].length()-3 >= 0) {
+				values[3] = values[3].substring(values[3].indexOf(":\"") + 2, values[3].length()-3);
+			} else {
+				values[0] = "";
+			}
+
+			if (values[0].length()-4 >= 0) {
+				values[4] = values[4].substring(values[4].indexOf(":\"") + 2, values[4].length()-4);
+			} else {
+				values[0] = "";
+			}
+
+			if (values[0].length()-2 >= 0) {
+				values[5] = values[5].substring(values[5].indexOf(":") + 1, values[5].length()-2);
+			} else {
+				values[0] = "";
+			}
+
+			if (values[0].length()-3 >= 0) {
+				values[6] = values[6].substring(values[6].indexOf(":\"") + 2, values[6].length()-3);
+			} else {
+				values[0] = "";
+			}
+
+			if (values[0].length()-1 >= 0) {
+				values[7] = values[7].substring(6, values[7].length()-1);
+			} else {
+				values[0] = "";
+			}
 
 			for (int j=0; j<values.length; j++) {
 				data[i][j] = values[j];
