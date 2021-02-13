@@ -12,6 +12,7 @@ import twitter4j.*;
 import twitter4j.auth.AccessToken;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static spark.Spark.*;
@@ -23,7 +24,8 @@ import static spark.Spark.*;
  */
 public class ApiRunner {
 	private Database storage;
-	private final Twitter twitter = new TwitterFactory().getInstance();
+	//private final Twitter twitter = new TwitterFactory().getInstance();
+	private final Twitter twitter = TwitterFactory.getSingleton();
 	private final AccessToken accessToken = new AccessToken("1339912172923727873-XklaSMP6xQJC9AfIMXyMk2Tg3S56kc", "36TPy4D7TbvjhIi2BIqQsaEfbObeqZCHG9Jj2sZFuhkAW");
 
 	public ApiRunner() {
@@ -66,7 +68,8 @@ public class ApiRunner {
 
 		before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
 
-		get("/:searchTerm/:startDate/:endDate", (req, res) -> {
+		//get("/events?type=:searchTerm&startDate=:startDate&endDate=:endDate", (req, res) -> {
+		get("/events/:searchTerm/:startDate/:endDate", (req, res) -> {
 			res.header("Content-Type", "application/json");
 			res.header(
 					"Access-Control-Allow-Headers",
@@ -85,12 +88,26 @@ public class ApiRunner {
 			for (int i = 0; i < resources.length; i++) {
 				JsonObject event = new JsonObject();
 				event.addProperty("id", resources[i].getId());
-				event.addProperty("datetime", resources[i].getDatetime());
-				event.addProperty("name", resources[i].getName());
-				event.addProperty("summary", resources[i].getSummary());
-				event.addProperty("url", resources[i].getUrl());
-				event.addProperty("type", resources[i].getType());
-				event.addProperty("location", resources[i].getLocation());
+
+				String localDateTime = resources[i].getDatetime().substring(0, 19);
+				localDateTime = localDateTime.replace(' ', 'T');
+				event.addProperty("datetime", localDateTime);
+
+				String name = resources[i].getName();
+				event.addProperty("name", name);
+
+				String summary = resources[i].getSummary();
+				event.addProperty("summary", summary);
+
+				String url = resources[i].getUrl();
+				event.addProperty("url", url);
+
+				String type = resources[i].getType();
+				event.addProperty("type", type);
+
+				String coordinates = resources[i].getLocation();
+				event.addProperty("location", coordinates);
+
 				sb.append(event.toString());
 
 				if (i < resources.length - 1) {
@@ -113,7 +130,7 @@ public class ApiRunner {
 
             request = request.substring(request.lastIndexOf("['"));
             request = request.substring(0, request.lastIndexOf("']"));
-            String[] requests = request.split("', '");
+			String[] requests = request.split("', '");
             PoliceObject[] events = new PoliceObject[requests.length];
 
             for (int i=0; i<events.length; i++) {
@@ -124,20 +141,36 @@ public class ApiRunner {
 			return "";
 		});
 
-		get("/tweets/:coordinates/:date/", (req, res) -> {
+		get("/tweets/:x/:y/:date", (req, res) -> {
+			res.type("application/json");
+			res.header(
+					"Access-Control-Allow-Headers",
+					"Origin, X-Requested-With, Content-Type, Accept"
+			);
+			String x = req.params(":x");
+			String y = req.params(":y");
+			String coordinates = x + "," + y;
 
-			String coordinates = req.params(":coordinates");
 			String startDate = req.params(":date");
+
+			if (startDate.charAt(12) == ':') {
+				System.out.println("Error located. Date size: " + startDate.length());
+				startDate = startDate.split("T")[0] + "T0" + startDate.split("T")[1];
+			}
+
 			String endDate = "";
 
-			coordinates = coordinates.substring(1);
-			startDate = startDate.substring(1);
-
 			LocalDateTime formattedStartDate = LocalDateTime.parse(startDate);
-			LocalDateTime formattedEndDate = formattedStartDate.plusMinutes(30);
+			//LocalDateTime formattedEndDate = formattedStartDate.plusMinutes(30);
+			LocalDateTime formattedEndDate = formattedStartDate.plusDays(1);
 
 			startDate = formattedStartDate.toString();
+			startDate += ":00";
+			startDate = startDate.replace('T', ' ');
+
 			endDate = formattedEndDate.toString();
+			endDate += ":00";
+			endDate = endDate.replace('T', ' ');
 
 			String[] splitFullLocation = coordinates.split(",");
 			String latitude = splitFullLocation[splitFullLocation.length-2];
@@ -151,6 +184,7 @@ public class ApiRunner {
 			sb.append("[");
 			for (int i = 0; i < resources.length; i++){
 				JsonObject event = new JsonObject();
+
 				event.addProperty("id", resources[i].getId());
 				event.addProperty("text", resources[i].getText());
 				event.addProperty("location", resources[i].getLocation());
@@ -287,17 +321,31 @@ public class ApiRunner {
 	}
 
 	public boolean populateTwitterData(String lat, String lon, String from, String until) {
+		QueryResult result;
+
 		double latitude = Double.parseDouble(lat);
 		double longitude = Double.parseDouble(lon);
-		QueryResult result;
+
+		from = from.replace(' ', ':');
+		until = until.replace(' ', ':');
+
+		System.out.println("Lat: " + latitude);
+		System.out.println("Long: " + longitude);
+		System.out.println("From: " + from);
+		System.out.println("Until: " + until);
 
 		try {
 			System.out.println("Searching...");
 			Query query = new Query();
-			query.geoCode(new GeoLocation(latitude, longitude), 3.0, "km");
+			//query.setGeoCode((new GeoLocation(latitude, longitude)), 1.0, "km");
+			query.geoCode(new GeoLocation(latitude, longitude), 10.0, "km");
 			query.setSince(from);
 			query.setUntil(until);
+			query.setCount(100);
+
 			result = twitter.search(query);
+			System.out.println("Number of tweets: " + result.getCount());
+			System.out.println("Number of returnable tweets: " + result.getTweets().size());
 		} catch (TwitterException te) {
 			te.printStackTrace();
 			System.out.println("Failed to search tweets: " + te.getMessage());
@@ -305,7 +353,7 @@ public class ApiRunner {
 			return false;
 		}
 
-		List<Status> tweets = result.getTweets();
+		List<Status> tweets = new ArrayList<>(result.getTweets());
 		TwitterObject[] tweetArray = new TwitterObject[tweets.size()];
 
 		for (int i=0; i<tweetArray.length; i++) {
@@ -313,6 +361,8 @@ public class ApiRunner {
 
 			String id = "" + tweet.getId();
 			String text = tweet.getText();
+			System.out.println(text);
+
 			String location = tweet.getGeoLocation().toString();
 			String datetime = tweet.getCreatedAt().toString().substring(0, 10);
 			String user = tweet.getUser().getName();
@@ -322,6 +372,8 @@ public class ApiRunner {
 		}
 
 		this.storage.setTwitter(tweetArray);
+
+
 		return true;
 	}
 

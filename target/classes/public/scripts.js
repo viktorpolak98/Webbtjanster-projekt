@@ -11,7 +11,6 @@ Authors: Tor Stenfeldt, Viktor Polak, et al.
 Populates the list of police events using the search term.
 */
 function searchEvents(search) {
-  console.log("Yarr");
   var searchTerm = search.searchTerm.value;
   var startDate = search.startDate.value;
   var endDate = search.endDate.value;
@@ -35,7 +34,8 @@ function searchEvents(search) {
   $.ajax({
     method: "get",
     //url: "https://polisen.se/api/events?type=" + searchTerm,
-    url: "http://localhost:4000/" + searchTerm + "/" + startDate + "/" + endDate,
+    //url: "http://localhost:4000/events?type=" + searchTerm + "&startDate=" + startDate + "&endDate=" + endDate,
+    url: "http://localhost:4000/events/" + searchTerm + "/" + startDate + "/" + endDate,
     headers: {"Accept": "application/json"},
   }).done(function(result) {
     console.log(result);
@@ -104,33 +104,62 @@ function updateTweets(tweets) {
 }
 
 /*
+Updates the tweets related to the selected police event.
+*/
+function setTweets(event) {
+  console.log('Setting tweets.');
+
+  var date = event.datetime;
+  var coordinates = event.location.split(',');
+  var x = coordinates[0];
+  var y = coordinates[1];
+
+  console.log('coordinates: ' + coordinates);
+  console.log('date ' + date);
+
+  $.ajax({
+    method: "get",
+    //url: "http://localhost:4000/" + coordinates + "/" + date,
+    url: "http://localhost:4000/tweets/" + x + "/" + y + "/" + date,
+    headers: {"Accept": "application/json"},
+  }).done(function(result) {
+    console.log(result.id);
+    console.log(result.datetime);
+    console.log(result.location);
+
+    $("#tweetList").empty();
+    tweetsContained = $('#tweetList');
+
+    for (tweet of result) {
+      tweetContainer = '<p>' + tweet + '</p>';
+      tweetsContained.append(tweetContainer);
+    }
+  });
+}
+
+/*
 Updates the information about the selected police event.
 */
-function setEvent(data) {
+function setEvent(event) {
   return function() {
+
     $("#tweets").empty();
-    var gps = data.location.gps;
-    var locationName = data.name;
-    var name = data.name;
-    var summary = data.summary;
-    var url = data.url;
-    var type = data.type;
-    var dateTime = data.datetime;
+    console.log(event.datetime);
+    console.log(event.location);
 
     $("#eventTitle").empty();
-    something = '<h3>' + data.name + '</h3>';
+    something = '<h3>' + event.name + '</h3>';
     $("#eventTitle").append(something);
 
     $("#eventDescription").empty();
-    something2 = '<p>' + data.summary + '</p>';
+    something2 = '<p>' + event.summary + '</p>';
     $("#eventTitle").append(something2);
 
     $("#eventUrl").empty();
-    something3 = '<a src="' + data.url + '">' + data.url + '</a>';
+    something3 = '<a src="' + event.url + '">' + event.url + '</a>';
     $("#eventUrl").append(something3);
 
-    var tweets = getTweets(data.location.gps);
-    updateTweets(tweets);
+    setTweets(event);
   }
 }
 

@@ -11,7 +11,6 @@ Authors: Tor Stenfeldt, Viktor Polak, et al.
 Populates the list of police events using the search term.
 */
 function searchEvents(search) {
-  console.log("Yarr");
   var searchTerm = search.searchTerm.value;
   var startDate = search.startDate.value;
   var endDate = search.endDate.value;
@@ -35,7 +34,8 @@ function searchEvents(search) {
   $.ajax({
     method: "get",
     //url: "https://polisen.se/api/events?type=" + searchTerm,
-    url: "http://localhost:4000/" + searchTerm + "/" + startDate + "/" + endDate,
+    //url: "http://localhost:4000/events?type=" + searchTerm + "&startDate=" + startDate + "&endDate=" + endDate,
+    url: "http://localhost:4000/events/" + searchTerm + "/" + startDate + "/" + endDate,
     headers: {"Accept": "application/json"},
   }).done(function(result) {
     console.log(result);
@@ -101,28 +101,31 @@ function updateTweets(tweets) {
   }
   // Loopa ut alla kommentarerna i en LI eller liknande beroende på hur du vill
   // visa dom och appenda till diven till höger som är gjort för twitter
-
-    for (i=0; i<result.length; i++) {
-      html = '<li id="police_post_' + i + '">' + result[i]['name'] + '</li>';
-      list.append(html);
-      $('#police_post_' + i).click(setEvent(result[i]));
-    }
-  });
 }
 
 /*
 Updates the tweets related to the selected police event.
 */
 function setTweets(event) {
-  var location = event.getLocation.gps;
-  var datetime = event.getDatetime;
+  console.log('Setting tweets.');
+
+  var date = event.datetime;
+  var coordinates = event.location.split(',');
+  var x = coordinates[0];
+  var y = coordinates[1];
+
+  console.log('coordinates: ' + coordinates);
+  console.log('date ' + date);
 
   $.ajax({
     method: "get",
-    url: "http://localhost:4000/tweets" + searchTerm + "/" + startDate + "/" + endDate,
+    //url: "http://localhost:4000/" + coordinates + "/" + date,
+    url: "http://localhost:4000/tweets/" + x + "/" + y + "/" + date,
     headers: {"Accept": "application/json"},
   }).done(function(result) {
-    console.log(result);
+    console.log(result.id);
+    console.log(result.datetime);
+    console.log(result.location);
 
     $("#tweetList").empty();
     tweetsContained = $('#tweetList');
@@ -139,14 +142,10 @@ Updates the information about the selected police event.
 */
 function setEvent(event) {
   return function() {
+
     $("#tweets").empty();
-    var gps = event.location.gps;
-    var locationName = event.name;
-    var name = event.name;
-    var summary = event.summary;
-    var url = event.url;
-    var type = event.type;
-    var dateTime = event.datetime;
+    console.log(event.datetime);
+    console.log(event.location);
 
     $("#eventTitle").empty();
     something = '<h3>' + event.name + '</h3>';
@@ -160,8 +159,6 @@ function setEvent(event) {
     something3 = '<a src="' + event.url + '">' + event.url + '</a>';
     $("#eventUrl").append(something3);
 
-    //var tweets = getTweets(data.location.gps);
-    //updateTweets(tweets);
     setTweets(event);
   }
 }
