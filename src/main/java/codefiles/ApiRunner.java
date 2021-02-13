@@ -7,6 +7,9 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.http.HttpResponse;
+import twitter4j.*;
+import twitter4j.auth.AccessToken;
+import java.util.List;
 
 import static spark.Spark.*;
 
@@ -17,10 +20,16 @@ import static spark.Spark.*;
  */
 public class ApiRunner {
 	private Database storage;
+	private final Twitter twitter = new TwitterFactory().getInstance();
+	private final AccessToken accessToken = new AccessToken("1339912172923727873-XklaSMP6xQJC9AfIMXyMk2Tg3S56kc", "36TPy4D7TbvjhIi2BIqQsaEfbObeqZCHG9Jj2sZFuhkAW");
+
+
 
 	public ApiRunner() {
-		staticFiles.location("/public");
 		port(4000);
+		staticFiles.location("/public");
+		twitter.setOAuthConsumer("aesqAiPjoaUmxhHYq6gbTkqyN", "eddjO1013o25Bufn8u4wMligT1eMHJGYH1A9r3hmfBZeMfdiXj");
+		twitter.setOAuthAccessToken(accessToken);
 
 		try {
 			this.storage = new Database();
@@ -75,18 +84,18 @@ public class ApiRunner {
 			StringBuilder sb = new StringBuilder();
 
 			sb.append("[");
-			for (int i=0; i<resources.length; i++) {
+			for (int i = 0; i < resources.length; i++) {
 				JsonObject event = new JsonObject();
-				event.addProperty("id",  resources[i].getId());
-                event.addProperty("datetime", resources[i].getDatetime());
+				event.addProperty("id", resources[i].getId());
+				event.addProperty("datetime", resources[i].getDatetime());
 				event.addProperty("name", resources[i].getName());
-                event.addProperty("summary", resources[i].getSummary());
-                event.addProperty("url", resources[i].getUrl());
-                event.addProperty("type", resources[i].getType());
-                event.addProperty("location", resources[i].getLocation());
+				event.addProperty("summary", resources[i].getSummary());
+				event.addProperty("url", resources[i].getUrl());
+				event.addProperty("type", resources[i].getType());
+				event.addProperty("location", resources[i].getLocation());
 				sb.append(event.toString());
 
-				if (i<resources.length-1) {
+				if (i < resources.length - 1) {
 					sb.append(",");
 				}
 			}
@@ -114,17 +123,19 @@ public class ApiRunner {
             }
 
             this.storage.setPolice(events);
-
 			return "";
 		});
 	}
+
 	/**
 	 * This method aquires data from the police-api as a string
 	 * After the raw data is aquired it splits each seprate object in to an array
 	 * After the objects have been divided it adds each parts values in to an two dimensional array
+	 *
 	 * @return a two dimensional array containing each entry and their values.
 	 */
 	public String[][] SplitDataFromApi() {
+		System.out.println("Split");
 		HttpResponse<JsonNode> response = null;
 		String body;
 		String[] entries;
@@ -146,76 +157,92 @@ public class ApiRunner {
 		}
 
 		body = response.getBody().toString();
-		body = body.substring(1, body.length()-2);
+		body = body.substring(1, body.length() - 2);
 		entries = body.split("},\\{");
 
 		data = new String[entries.length][8];
 
-		for (int i=0; i<entries.length; i++) {
+		for (int i = 0; i < entries.length; i++) {
 			String[] values = new String[8];
-			for (int j = 0; j < 7; j++){
+			for (int j = 0; j < 7; j++) {
 				int breakpoint = entries[i].indexOf(",\"") + 2;
 				values[j] = entries[i].substring(0, breakpoint);
 				entries[i] = entries[i].substring(breakpoint);
 			}
 			values[7] = entries[i];
 
+			//summary
 			if (values[0].length()-3 >= 0) {
-				values[0] = values[0].substring(values[0].indexOf(":\"") + 2, values[0].length()-3);
+				values[0] = values[0].substring(values[0].indexOf(":\"") + 2, values[0].length() -3 );
 			} else {
 				values[0] = "";
 			}
 
-			if (values[0].length()-1 >= 0) {
-				values[1] = values[1].substring(values[1].indexOf(":\"") + 2, values[1].length()-1);
+			//DateTime
+			if (values[1].length()-3 >= 0){
+				values[1] = values[1].substring(values[1].indexOf(":\"") + 2, values[1].length() - 3);
 			} else {
-				values[0] = "";
+				values[1] = "";
 			}
 
-			if (values[0].length()-3 >= 0) {
-				values[2] = values[2].substring(values[2].indexOf(":\"") + 2, values[2].length()-3);
+			//name
+			if (values[2].length()-3 >= 0){
+				values[2] = values[2].substring(values[2].indexOf(":\"") + 2, values[2].length() - 3);
 			} else {
-				values[0] = "";
+				values[2] = "";
 			}
 
-			if (values[0].length()-3 >= 0) {
-				values[3] = values[3].substring(values[3].indexOf(":\"") + 2, values[3].length()-3);
+			//location name
+			if (values[3].length()-3 >= 0){
+				values[3] = values[3].substring(values[3].indexOf(":\"") + 2, values[3].length() - 3);
 			} else {
-				values[0] = "";
+				values[3] = "";
 			}
 
-			if (values[0].length()-4 >= 0) {
-				values[4] = values[4].substring(values[4].indexOf(":\"") + 2, values[4].length()-4);
+			//location cords
+			if (values[4].length()-4 >= 0){
+				values[4] = values[4].substring(values[4].indexOf(":\"") + 2, values[4].length() - 4);
 			} else {
-				values[0] = "";
+				values[4] = "";
 			}
 
-			if (values[0].length()-2 >= 0) {
-				values[5] = values[5].substring(values[5].indexOf(":") + 1, values[5].length()-2);
+			//id
+			if (values[5].length()-2 >= 0){
+				values[5] = values[5].substring(values[5].indexOf(":") + 1, values[5].length() - 2);
 			} else {
-				values[0] = "";
+				values[5] = "";
 			}
 
-			if (values[0].length()-3 >= 0) {
-				values[6] = values[6].substring(values[6].indexOf(":\"") + 2, values[6].length()-3);
+			//type
+			if (values[6].length()-3 >= 0){
+				values[6] = values[6].substring(values[6].indexOf(":\"") + 2, values[6].length() - 3);
 			} else {
-				values[0] = "";
+				values[6] = "";
 			}
 
-			if (values[0].length()-1 >= 0) {
-				values[7] = values[7].substring(6, values[7].length()-1);
+			//url
+			if (values[7].length()-1 >= 0){
+				values[7] = values[7].substring(6, values[7].length() - 1);
 			} else {
-				values[0] = "";
+				values[7] = "";
 			}
 
-			for (int j=0; j<values.length; j++) {
+			for (int j = 0; j < values.length; j++) {
 				data[i][j] = values[j];
 			}
 		}
 
 		return data;
 	}
-	
+
+	/*
+		String fullLocation = values[4];
+		String[] splitFullLocation = fullLocation.split(",");
+		String latitude = splitFullLocation[splitFullLocation.length-2];
+		String longitude = splitFullLocation[splitFullLocation.length-1];
+		populateTwitterData(latitude, longitude);
+	*/
+
 	/**
 	 * Creates objects from the data received from the police API and stores them in the database.
 	 */
@@ -225,6 +252,37 @@ public class ApiRunner {
 		for (int i = 0; i < data.length; i++) {
 	 		PoliceObject apiObject = new PoliceObject(data[i][5], data[i][1], data[i][2], data[i][0], data[i][7], data[i][6], data[i][4]);
 			storage.putPolice(apiObject);
+		}
+	}
+
+	public void populateTwitterData(String lat, String lon, String from, String until){
+		double latitude = Double.parseDouble(lat);
+		double longitude = Double.parseDouble(lon);
+
+		try {
+			Query query = new Query();
+			query.geoCode(new GeoLocation(latitude, longitude), 3.0, "km");
+			query.setSince(from);
+			query.setUntil(until);
+			QueryResult result;
+			System.out.println("Searching...");
+
+			result = twitter.search(query);
+			List<Status> tweets = result.getTweets();
+			for (Status tweet : tweets) {
+//				System.out.println(tweet.getUser());
+				System.out.println(tweet.getText());
+//				System.out.println(tweet.getId());
+//				System.out.println(tweet.getPlace());
+				System.out.println(tweet.getCreatedAt() + "\n");
+				//TODO Add twitterData to database
+				//database.add(tweet.getText());
+			}
+
+		} catch (TwitterException te) {
+			te.printStackTrace();
+			System.out.println("Failed to search tweets: " + te.getMessage());
+			System.exit(-1);
 		}
 	}
 
