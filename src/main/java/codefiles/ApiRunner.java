@@ -1,6 +1,7 @@
 package codefiles;
 
 import codefiles.objects.PoliceObject;
+import codefiles.objects.TwitterObject;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.mashape.unirest.http.JsonNode;
@@ -9,6 +10,9 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.http.HttpResponse;
 import twitter4j.*;
 import twitter4j.auth.AccessToken;
+
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalUnit;
 import java.util.List;
 
 import static spark.Spark.*;
@@ -120,6 +124,48 @@ public class ApiRunner {
             this.storage.setPolice(events);
 			return "";
 		});
+
+		get("/tweets/:coordinates/:date/", (req, res) -> {
+
+			String coordinates = req.params(":coordinates");
+			String startDate = req.params(":date");
+			String endDate = "";
+
+			coordinates = coordinates.substring(1);
+			startDate = startDate.substring(1);
+
+			LocalDateTime formattedStartDate = LocalDateTime.parse(startDate);
+			LocalDateTime formattedEndDate = formattedStartDate.plusMinutes(30);
+
+			startDate = formattedStartDate.toString();
+			endDate = formattedEndDate.toString();
+
+			String[] splitFullLocation = coordinates.split(",");
+			String latitude = splitFullLocation[splitFullLocation.length-2];
+			String longitude = splitFullLocation[splitFullLocation.length-1];
+
+			populateTwitterData(latitude, longitude, startDate, endDate);
+
+			TwitterObject[] resources = this.storage.getTwitter();
+			StringBuilder sb = new StringBuilder();
+
+			sb.append("[");
+			for (int i = 0; i < resources.length; i++){
+				JsonObject event = new JsonObject();
+				event.addProperty("id", resources[i].getId());
+				event.addProperty("text", resources[i].getText());
+				event.addProperty("location", resources[i].getLocation());
+				event.addProperty("datetime", resources[i].getDatetime());
+				event.addProperty("user", resources[i].getUser());
+
+				if (i < resources.length - 1){
+					sb.append(",");
+				}
+			}
+			sb.append("]");
+
+			return sb.toString();
+		});
 	}
 
 	/**
@@ -229,14 +275,6 @@ public class ApiRunner {
 		return data;
 	}
 
-	/*
-		String fullLocation = values[4];
-		String[] splitFullLocation = fullLocation.split(",");
-		String latitude = splitFullLocation[splitFullLocation.length-2];
-		String longitude = splitFullLocation[splitFullLocation.length-1];
-		populateTwitterData(latitude, longitude);
-	*/
-
 	/**
 	 * Creates objects from the data received from the police API and stores them in the database.
 	 */
@@ -249,7 +287,8 @@ public class ApiRunner {
 		}
 	}
 
-	public void populateTwitterData(String lat, String lon, String from, String until){
+	public boolean populateTwitterData(String lat, String lon, String from, String until){
+
 		double latitude = Double.parseDouble(lat);
 		double longitude = Double.parseDouble(lon);
 
@@ -278,6 +317,7 @@ public class ApiRunner {
 			System.out.println("Failed to search tweets: " + te.getMessage());
 			System.exit(-1);
 		}
+		return false;
 	}
 
 	public static void main(String[] args) {
