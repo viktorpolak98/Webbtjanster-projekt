@@ -6,11 +6,11 @@ package codefiles.objects;
  * @version 1.0
  */
 public class TwitterObject {
-    String id;
-    String text;
-    String location;
-    String datetime;
-    String user;
+    private String id;
+    private String text;
+    private String location;
+    private String datetime;
+    private String user;
 
     public TwitterObject(String id, String text, String location, String datetime, String user) {
         this.id = id;

@@ -101,36 +101,68 @@ function updateTweets(tweets) {
   }
   // Loopa ut alla kommentarerna i en LI eller liknande beroende på hur du vill
   // visa dom och appenda till diven till höger som är gjort för twitter
+
+    for (i=0; i<result.length; i++) {
+      html = '<li id="police_post_' + i + '">' + result[i]['name'] + '</li>';
+      list.append(html);
+      $('#police_post_' + i).click(setEvent(result[i]));
+    }
+  });
+}
+
+/*
+Updates the tweets related to the selected police event.
+*/
+function setTweets(event) {
+  var location = event.getLocation.gps;
+  var datetime = event.getDatetime;
+
+  $.ajax({
+    method: "get",
+    url: "http://localhost:4000/tweets" + searchTerm + "/" + startDate + "/" + endDate,
+    headers: {"Accept": "application/json"},
+  }).done(function(result) {
+    console.log(result);
+
+    $("#tweetList").empty();
+    tweetsContained = $('#tweetList');
+
+    for (tweet of result) {
+      tweetContainer = '<p>' + tweet + '</p>';
+      tweetsContained.append(tweetContainer);
+    }
+  });
 }
 
 /*
 Updates the information about the selected police event.
 */
-function setEvent(data) {
+function setEvent(event) {
   return function() {
     $("#tweets").empty();
-    var gps = data.location.gps;
-    var locationName = data.name;
-    var name = data.name;
-    var summary = data.summary;
-    var url = data.url;
-    var type = data.type;
-    var dateTime = data.datetime;
+    var gps = event.location.gps;
+    var locationName = event.name;
+    var name = event.name;
+    var summary = event.summary;
+    var url = event.url;
+    var type = event.type;
+    var dateTime = event.datetime;
 
     $("#eventTitle").empty();
-    something = '<h3>' + data.name + '</h3>';
+    something = '<h3>' + event.name + '</h3>';
     $("#eventTitle").append(something);
 
     $("#eventDescription").empty();
-    something2 = '<p>' + data.summary + '</p>';
+    something2 = '<p>' + event.summary + '</p>';
     $("#eventTitle").append(something2);
 
     $("#eventUrl").empty();
-    something3 = '<a src="' + data.url + '">' + data.url + '</a>';
+    something3 = '<a src="' + event.url + '">' + event.url + '</a>';
     $("#eventUrl").append(something3);
 
-    var tweets = getTweets(data.location.gps);
-    updateTweets(tweets);
+    //var tweets = getTweets(data.location.gps);
+    //updateTweets(tweets);
+    setTweets(event);
   }
 }
 

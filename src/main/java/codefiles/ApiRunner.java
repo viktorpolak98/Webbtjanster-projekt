@@ -1,6 +1,7 @@
 package codefiles;
 
 import codefiles.objects.PoliceObject;
+import codefiles.objects.TwitterObject;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.mashape.unirest.http.JsonNode;
@@ -9,6 +10,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.http.HttpResponse;
 import twitter4j.*;
 import twitter4j.auth.AccessToken;
+
 import java.util.List;
 
 import static spark.Spark.*;
@@ -249,35 +251,43 @@ public class ApiRunner {
 		}
 	}
 
-	public void populateTwitterData(String lat, String lon, String from, String until){
+	public boolean populateTwitterData(String lat, String lon, String from, String until) {
 		double latitude = Double.parseDouble(lat);
 		double longitude = Double.parseDouble(lon);
+		QueryResult result;
 
 		try {
+			System.out.println("Searching...");
 			Query query = new Query();
 			query.geoCode(new GeoLocation(latitude, longitude), 3.0, "km");
 			query.setSince(from);
 			query.setUntil(until);
-			QueryResult result;
-			System.out.println("Searching...");
-
 			result = twitter.search(query);
-			List<Status> tweets = result.getTweets();
-			for (Status tweet : tweets) {
-//				System.out.println(tweet.getUser());
-				System.out.println(tweet.getText());
-//				System.out.println(tweet.getId());
-//				System.out.println(tweet.getPlace());
-				System.out.println(tweet.getCreatedAt() + "\n");
-				//TODO Add twitterData to database
-				//database.add(tweet.getText());
-			}
-
 		} catch (TwitterException te) {
 			te.printStackTrace();
 			System.out.println("Failed to search tweets: " + te.getMessage());
 			System.exit(-1);
+			return false;
 		}
+
+		List<Status> tweets = result.getTweets();
+		TwitterObject[] tweetArray = new TwitterObject[tweets.size()];
+
+		for (int i=0; i<tweetArray.length; i++) {
+			Status tweet = tweets.get(i);
+
+			String id = "" + tweet.getId();
+			String text = tweet.getText();
+			String location = tweet.getGeoLocation().toString();
+			String datetime = tweet.getCreatedAt().toString().substring(0, 10);
+			String user = tweet.getUser().getName();
+
+			TwitterObject twitterObject = new TwitterObject(id, text, location, datetime, user);
+			tweetArray[i] = twitterObject;
+		}
+
+		this.storage.setTwitter(tweetArray);
+		return true;
 	}
 
 	public static void main(String[] args) {
