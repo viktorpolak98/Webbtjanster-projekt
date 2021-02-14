@@ -3,20 +3,20 @@ package codefiles.objects;
 /**
  * An object representing police reports.
  * @author Viktor Polak, Tor Stenfeldt
- * @version 1.1
+ * @version 2.1.0
  */
 public class PoliceObject {
     private String id;
-    private String datetime;
+    private String date;
     private String name; 
     private String summary;
     private String url;
     private String type;
     private String location;
 
-    public PoliceObject(String id, String datetime, String name, String summary, String url, String type, String location) {
+    public PoliceObject(String id, String date, String name, String summary, String url, String type, String location) {
         this.id = id;
-        this.datetime = datetime;
+        this.date = date;
         this.name = name;
         this.summary = summary;
         this.url = url;
@@ -28,8 +28,8 @@ public class PoliceObject {
         return this.id;
     }
 
-    public String getDatetime() {
-        return this.datetime;
+    public String getDate() {
+        return this.date;
     }
 
     public String getName() {
@@ -56,7 +56,7 @@ public class PoliceObject {
     public String toString() {
         return "ApiObject{" +
                 "id='" + id + '\'' +
-                ", datetime='" + datetime + '\'' +
+                ", datetime='" + date + '\'' +
                 ", name='" + name + '\'' +
                 ", summary='" + summary + '\'' +
                 ", url='" + url + '\'' +
