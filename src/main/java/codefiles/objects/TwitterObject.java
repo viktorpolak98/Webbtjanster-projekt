@@ -3,20 +3,20 @@ package codefiles.objects;
 /**
  * An object representing tweets.
  * @author Viktor Polak, Tor Stenfeldt
- * @version 1.0
+ * @version 2.1.0
  */
 public class TwitterObject {
-    String id;
-    String text;
-    String location;
-    String datetime;
-    String user;
+    private String id;
+    private String text;
+    private String location;
+    private String date;
+    private String user;
 
-    public TwitterObject(String id, String text, String location, String datetime, String user) {
+    public TwitterObject(String id, String text, String location, String date, String user) {
         this.id = id;
         this.text = text;
         this.location = location;
-        this.datetime = datetime;
+        this.date = date;
         this.user = user;
     }
 
@@ -32,8 +32,8 @@ public class TwitterObject {
         return location;
     }
 
-    public String getDatetime() {
-        return datetime;
+    public String getDate() {
+        return date;
     }
 
     public String getUser() {
@@ -46,7 +46,7 @@ public class TwitterObject {
                 "id='" + id + '\'' +
                 ", text='" + text + '\'' +
                 ", location='" + location + '\'' +
-                ", datetime='" + datetime + '\'' +
+                ", datetime='" + date + '\'' +
                 ", user='" + user + '\'' +
                 '}';
     }
